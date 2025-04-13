@@ -1,0 +1,180 @@
+<template>
+  <div class="flex h-screen bg-gray-50">
+    <!-- Chat List Sidebar -->
+    <div class="w-64 bg-white border-r flex flex-col">
+      <!-- Chat History Header -->
+      <div class="h-16 px-4 flex items-center border-b">
+        <h2 class="text-xl font-semibold">Chat History</h2>
+      </div>
+
+      <!-- Chat List -->
+      <div class="flex-1 overflow-y-auto p-4">
+        <div class="space-y-2">
+          <button
+            v-for="chat in chatStore.sortedChatList"
+            :key="chat.id"
+            @click="selectChat(chat.id)"
+            :class="[
+              'w-full p-3 text-left rounded-lg transition-colors',
+              chat.id === chatStore.activeChat?.id
+                ? 'bg-primary text-white'
+                : 'hover:bg-gray-100'
+            ]"
+          >
+            <div class="flex items-center space-x-2">
+              <span class="text-xl">{{ getPersonaIcon(chat.personaId) }}</span>
+              <span class="font-medium">{{ getPersonaName(chat.personaId) }}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Start New Chat Button (Fixed at bottom) -->
+      <div class="h-16 px-4 flex items-center border-t bg-white">
+        <router-link
+          to="/new-chat"
+          class="btn btn-primary w-full block text-center"
+        >
+          Start New Chat
+        </router-link>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="flex-1 flex flex-col">
+      <div v-if="chatStore.activeChat" class="flex-1 flex flex-col">
+        <!-- Chat Header -->
+        <div class="h-16 px-4 flex items-center justify-between border-b bg-white">
+          <div class="flex items-center space-x-3">
+            <span class="text-2xl">
+              {{ getPersonaIcon(chatStore.activeChat.personaId) }}
+            </span>
+            <h2 class="text-xl font-medium">
+              {{ getPersonaName(chatStore.activeChat.personaId) }}
+            </h2>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div 
+          ref="messagesContainer"
+          class="flex-1 overflow-y-auto p-4 space-y-4"
+        >
+          <div
+            v-for="message in chatStore.activeChat.messages"
+            :key="message.id"
+            :class="[
+              'max-w-3xl mx-auto p-4 rounded-lg',
+              message.type === 'user'
+                ? 'bg-primary text-white ml-auto'
+                : 'bg-white shadow-sm'
+            ]"
+          >
+            <p>{{ message.content }}</p>
+            <div 
+              :class="[
+                'text-xs mt-1',
+                message.type === 'user' ? 'text-white/70' : 'text-gray-500'
+              ]"
+            >
+              {{ formatTime(message.createdAt) }}
+              <span v-if="message.status === 'error'" class="text-red-500 ml-2">
+                Error sending message
+              </span>
+            </div>
+          </div>
+
+          <div v-if="chatStore.errorState" class="text-center text-red-500 p-4">
+            {{ chatStore.errorState }}
+          </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="h-16 px-4 flex items-center border-t bg-white">
+          <form @submit.prevent="sendMessage" class="flex space-x-4 w-full">
+            <input
+              v-model="newMessage"
+              type="text"
+              placeholder="Type a message..."
+              class="input flex-1"
+              :disabled="isSending"
+            >
+            <button
+              type="submit"
+              class="btn btn-primary"
+              :disabled="isSending || !newMessage.trim()"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- No Active Chat -->
+      <div 
+        v-else 
+        class="flex-1 flex items-center justify-center text-gray-500"
+      >
+        Select a chat or start a new conversation
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, nextTick, watch } from 'vue'
+import { useChatStore } from '@/stores/chat'
+import { usePersonaStore } from '@/stores/persona'
+import { format } from 'date-fns'
+
+const chatStore = useChatStore()
+const personaStore = usePersonaStore()
+
+const newMessage = ref('')
+const isSending = ref(false)
+const messagesContainer = ref<HTMLElement | null>(null)
+
+const getPersonaIcon = (personaId: string) => {
+  return personaStore.getPersonaById(personaId)?.icon || '👤'
+}
+
+const getPersonaName = (personaId: string) => {
+  return personaStore.getPersonaById(personaId)?.name || 'Unknown'
+}
+
+const formatTime = (date: Date) => {
+  return format(date, 'h:mm a')
+}
+
+const selectChat = (chatId: string) => {
+  chatStore.setActiveChat(chatId)
+}
+
+const scrollToBottom = async () => {
+  await nextTick()
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+  }
+}
+
+const sendMessage = async () => {
+  if (!newMessage.value.trim() || isSending.value) return
+
+  isSending.value = true
+  await chatStore.sendMessage(newMessage.value)
+  newMessage.value = ''
+  isSending.value = false
+  await scrollToBottom()
+}
+
+// Watch for new messages and scroll to bottom
+watch(
+  () => chatStore.activeChat?.messages,
+  () => scrollToBottom(),
+  { deep: true }
+)
+
+onMounted(() => {
+  scrollToBottom()
+})
+</script> 
