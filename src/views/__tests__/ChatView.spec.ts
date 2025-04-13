@@ -1,10 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vitest } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { createRouter, createWebHistory } from 'vue-router'
 import ChatView from '../ChatView.vue'
 import { useChatStore } from '@/stores/chat'
-import { usePersonaStore } from '@/stores/persona'
 
 const router = createRouter({
   history: createWebHistory(),
