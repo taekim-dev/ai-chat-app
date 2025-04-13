@@ -3,7 +3,7 @@
     <!-- Chat List Sidebar -->
     <div class="w-64 bg-white border-r flex flex-col">
       <!-- Chat History Header -->
-      <div class="h-16 px-4 flex items-center border-b">
+      <div class="h-16 px-4 flex justify-center items-center border-b">
         <h2 class="text-xl font-semibold">Chat History</h2>
       </div>
 
