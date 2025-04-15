@@ -27,6 +27,12 @@ export const usePersonaStore = defineStore('persona', {
         name: 'Fitness Trainer',
         icon: '💪',
         description: 'Helps you achieve your fitness goals with personalized workouts'
+      },
+      {
+        id: 'mystery',
+        name: 'Celebrity Chat',
+        icon: '🌟',
+        description: 'Chat with a surprise global celebrity - could be a sports star, musician, or other popular figure'
       }
     ] as Persona[]
   }),
