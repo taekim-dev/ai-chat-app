@@ -1,29 +1,23 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="min-h-screen bg-gray-50 py-8 px-4">
     <div class="max-w-2xl mx-auto">
-      <h1 class="text-3xl font-bold text-center mb-8">
-        Who would you like to chat with?
-      </h1>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <h1 class="text-2xl font-bold mb-6 text-center">Choose Your AI Assistant</h1>
+      
+      <div class="grid gap-4 md:grid-cols-2">
         <button
           v-for="persona in personaStore.personas"
           :key="persona.id"
-          @click="selectPersona(persona)"
-          class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          @click="startChat(persona)"
+          class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 text-left"
         >
-          <span class="text-4xl mb-4">{{ persona.icon }}</span>
-          <span class="text-xl font-medium">{{ persona.name }}</span>
+          <div class="flex items-center space-x-4">
+            <span class="text-3xl">{{ persona.icon }}</span>
+            <div>
+              <h2 class="text-xl font-semibold">{{ persona.name }}</h2>
+              <p class="text-gray-600 mt-1">{{ persona.description }}</p>
+            </div>
+          </div>
         </button>
-      </div>
-
-      <div class="mt-8 text-center">
-        <router-link 
-          to="/"
-          class="text-gray-600 hover:text-gray-800"
-        >
-          Back to Home
-        </router-link>
       </div>
     </div>
   </div>
@@ -31,16 +25,16 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
+import { useChatStore } from '@/stores/chat'
 import type { Persona } from '@/types'
 
 const router = useRouter()
-const chatStore = useChatStore()
 const personaStore = usePersonaStore()
+const chatStore = useChatStore()
 
-const selectPersona = async (persona: Persona) => {
-  await chatStore.createChat(persona)
+async function startChat(persona: Persona) {
+  const chat = await chatStore.createChat(persona)
   router.push('/chat')
 }
 </script> 

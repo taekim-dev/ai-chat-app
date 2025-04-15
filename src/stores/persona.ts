@@ -7,17 +7,26 @@ export const usePersonaStore = defineStore('persona', {
       {
         id: 'therapist',
         name: 'Therapist',
-        icon: '🔵' // We'll use emoji for now, can be replaced with actual icons
+        icon: '👨‍⚕️',
+        description: 'A supportive listener who helps you explore thoughts and feelings'
       },
       {
-        id: 'persona-b',
-        name: 'B',
-        icon: '🟢'
+        id: 'tutor',
+        name: 'Language Tutor',
+        icon: '👨‍🏫',
+        description: 'Helps you learn and practice languages with personalized guidance'
       },
       {
-        id: 'persona-c',
-        name: 'C',
-        icon: '🟡'
+        id: 'chef',
+        name: 'Master Chef',
+        icon: '👨‍🍳',
+        description: 'Guides you through recipes and cooking techniques'
+      },
+      {
+        id: 'trainer',
+        name: 'Fitness Trainer',
+        icon: '💪',
+        description: 'Helps you achieve your fitness goals with personalized workouts'
       }
     ] as Persona[]
   }),
