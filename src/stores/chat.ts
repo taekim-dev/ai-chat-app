@@ -47,8 +47,8 @@ export const useChatStore = defineStore('chat', {
       storage.saveChats(this.chatList)
 
       try {
-        // Send message to API
-        const reply = await api.sendMessage(content)
+        // Send message to API with persona ID
+        const reply = await api.sendMessage(content, this.activeChat.personaId)
         
         // Create and add AI response
         const aiMessage: Message = {
