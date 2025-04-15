@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
-import { v4 as uuidv4 } from 'uuid'
+import { ref, computed } from 'vue'
 import type { Chat, Message, ChatState, Persona } from '@/types'
-import { api } from '@/services/api'
+import { v4 as uuidv4 } from 'uuid'
+import * as api from '@/services/api'
 import { storage } from '@/services/storage'
-import { SyncService } from '@/services/sync'
+import { syncService } from '@/services/sync'
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
@@ -23,19 +24,63 @@ export const useChatStore = defineStore('chat', {
 
   actions: {
     initialize() {
-      // Load chats from storage
-      this.chatList = storage.loadChats()
-      
-      // Initialize sync service
-      const syncService = new SyncService()
-      syncService.onUpdate((chats) => {
-        this.chatList = chats
-        storage.saveChats(chats)
-      })
+      const savedChats = storage.loadChats()
+      if (savedChats) {
+        this.chatList = savedChats
+      }
+    },
 
-      // If there are chats, set the most recent as active
-      if (this.chatList.length > 0) {
-        this.activeChat = this.sortedChatList[0]
+    async sendMessage(content: string) {
+      if (!this.activeChat) return
+
+      // Create and add user message
+      const userMessage: Message = {
+        id: uuidv4(),
+        content,
+        type: 'user',
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      
+      this.activeChat.messages.push(userMessage)
+      storage.saveChats(this.chatList)
+
+      try {
+        // Send message to API
+        const reply = await api.sendMessage(content)
+        
+        // Create and add AI response
+        const aiMessage: Message = {
+          id: uuidv4(),
+          content: reply,
+          type: 'agent',
+          status: 'sent',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+        
+        userMessage.status = 'sent'
+        this.activeChat.messages.push(aiMessage)
+        storage.saveChats(this.chatList)
+        
+        // Sync in background - don't await or catch errors
+        this.syncChats()
+      } catch (error) {
+        userMessage.status = 'error'
+        this.errorState = 'Failed to send message. Please try again.'
+        storage.saveChats(this.chatList)
+        throw error
+      }
+    },
+
+    // New method to handle sync separately
+    syncChats() {
+      try {
+        syncService.broadcast('chats-updated', this.chatList)
+      } catch (error) {
+        console.warn('Failed to sync chats:', error)
+        // Don't set error state or throw - sync is non-critical
       }
     },
 
@@ -59,45 +104,6 @@ export const useChatStore = defineStore('chat', {
       
       storage.saveChats(this.chatList)
       return newChat
-    },
-
-    async sendMessage(content: string) {
-      if (!this.activeChat) return
-
-      const message: Message = {
-        id: uuidv4(),
-        content,
-        type: 'user',
-        status: 'pending',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-
-      // Add user message
-      this.activeChat.messages.push(message)
-      this.activeChat.updatedAt = new Date()
-      
-      try {
-        // Send to API and get response
-        const response = await api.sendMessage(
-          { content, createdAt: message.createdAt, updatedAt: message.updatedAt },
-          this.activeChat.personaId
-        )
-
-        // Update message status
-        message.status = 'sent'
-        
-        // Add AI response
-        this.activeChat.messages.push(response)
-        this.activeChat.updatedAt = new Date()
-        
-        this.errorState = null
-      } catch (error) {
-        message.status = 'error'
-        this.errorState = "We're having trouble reaching your agent. Please try again."
-      }
-
-      storage.saveChats(this.chatList)
     },
 
     setActiveChat(chatId: string) {
