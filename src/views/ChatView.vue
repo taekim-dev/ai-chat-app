@@ -70,7 +70,7 @@
                 : 'bg-white shadow-sm'
             ]"
           >
-            <p>{{ message.content }}</p>
+          <div v-html="formatMessageHtml(message)" class="leading-relaxed"></div>
             <div 
               :class="[
                 'text-xs mt-1',
@@ -165,6 +165,34 @@ const sendMessage = async () => {
   newMessage.value = ''
   isSending.value = false
   await scrollToBottom()
+}
+
+const getMessageText = (message: any): string => {
+  if (message.type === 'user') {
+    return message.content
+  }
+
+  if (typeof message.content === 'string') {
+    try {
+      const parsed = JSON.parse(message.content)
+      return parsed.content || '[No content]'
+    } catch {
+      return '[Invalid format]'
+    }
+  }
+
+  return message.content?.content || '[No content]'
+}
+const formatMessageHtml = (message: any): string => {
+  const text = getMessageText(message)
+    .replace(/&/g, "&amp;")        // sanitize HTML
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+
+  return `<p>${text
+    .split('\n\n')
+    .map(paragraph => paragraph.replace(/\n/g, '<br>'))
+    .join('</p><p>')}</p>`
 }
 
 // Watch for new messages and scroll to bottom
