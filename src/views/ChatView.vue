@@ -56,24 +56,30 @@
     <div class="flex-1 flex flex-col w-full">
       <div v-if="chatStore.activeChat" class="flex-1 flex flex-col">
         <!-- Chat Header -->
-        <div class="h-16 px-4 flex items-center justify-between border-b bg-white">
-          <!-- Hamburger Menu for Mobile -->
-          <button 
-            class="md:hidden p-2 hover:bg-gray-100 rounded-lg mr-2"
-            @click="isSidebarOpen = !isSidebarOpen"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+        <div class="h-16 px-4 flex items-center border-b bg-white">
+          <div class="flex items-center justify-between w-full">
+            <!-- Left side with hamburger -->
+            <button 
+              class="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+              @click="isSidebarOpen = !isSidebarOpen"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
 
-          <div class="flex items-center space-x-3">
-            <span class="text-2xl">
-              {{ getPersonaIcon(chatStore.activeChat.personaId) }}
-            </span>
-            <h2 class="text-xl font-medium">
-              {{ getPersonaName(chatStore.activeChat.personaId) }}
-            </h2>
+            <!-- Centered content -->
+            <div class="flex items-center space-x-3 absolute left-1/2 transform -translate-x-1/2">
+              <span class="text-2xl">
+                {{ getPersonaIcon(chatStore.activeChat.personaId) }}
+              </span>
+              <h2 class="text-xl font-medium">
+                {{ getPersonaName(chatStore.activeChat.personaId) }}
+              </h2>
+            </div>
+
+            <!-- Right side spacer to balance layout -->
+            <div class="w-10 md:hidden"></div>
           </div>
         </div>
 
