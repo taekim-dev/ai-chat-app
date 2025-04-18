@@ -20,7 +20,7 @@
       </div>
 
       <!-- Chat List -->
-      <div class="flex-1 overflow-y-auto p-4">
+      <div class="flex-1 overflow-y-auto p-4 flex-shrink-0">
         <div class="space-y-2">
           <button
             v-for="chat in chatStore.sortedChatList"
@@ -42,7 +42,7 @@
       </div>
 
       <!-- Start New Chat Button (Fixed at bottom) -->
-      <div class="h-16 px-4 flex items-center border-t bg-white">
+      <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
         <router-link
           to="/new-chat"
           class="btn btn-primary w-full block text-center"
@@ -53,33 +53,27 @@
     </div>
 
     <!-- Chat Area -->
-    <div class="flex-1 flex flex-col w-full">
-      <div v-if="chatStore.activeChat" class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col w-full overflow-hidden">
+      <div v-if="chatStore.activeChat" class="flex-1 flex flex-col h-full">
         <!-- Chat Header -->
-        <div class="h-16 px-4 flex items-center border-b bg-white">
-          <div class="flex items-center justify-between w-full">
-            <!-- Left side with hamburger -->
-            <button 
-              class="md:hidden p-2 hover:bg-gray-100 rounded-lg"
-              @click="isSidebarOpen = !isSidebarOpen"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+        <div class="h-16 px-4 flex items-center justify-between border-b bg-white flex-shrink-0">
+          <!-- Hamburger Menu for Mobile -->
+          <button 
+            class="md:hidden p-2 hover:bg-gray-100 rounded-lg mr-2"
+            @click="isSidebarOpen = !isSidebarOpen"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
 
-            <!-- Centered content -->
-            <div class="flex items-center space-x-3 absolute left-1/2 transform -translate-x-1/2">
-              <span class="text-2xl">
-                {{ getPersonaIcon(chatStore.activeChat.personaId) }}
-              </span>
-              <h2 class="text-xl font-medium">
-                {{ getPersonaName(chatStore.activeChat.personaId) }}
-              </h2>
-            </div>
-
-            <!-- Right side spacer to balance layout -->
-            <div class="w-10 md:hidden"></div>
+          <div class="flex items-center space-x-3">
+            <span class="text-2xl">
+              {{ getPersonaIcon(chatStore.activeChat.personaId) }}
+            </span>
+            <h2 class="text-xl font-medium">
+              {{ getPersonaName(chatStore.activeChat.personaId) }}
+            </h2>
           </div>
         </div>
 
@@ -111,14 +105,10 @@
               </span>
             </div>
           </div>
-
-          <div v-if="chatStore.errorState" class="text-center text-red-500 p-4">
-            {{ chatStore.errorState }}
-          </div>
         </div>
 
         <!-- Message Input -->
-        <div class="h-16 px-4 flex items-center border-t bg-white">
+        <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
           <form @submit.prevent="sendMessage" class="flex space-x-4 w-full">
             <input
               v-model="newMessage"
