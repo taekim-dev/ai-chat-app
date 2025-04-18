@@ -111,6 +111,22 @@
               </span>
             </div>
           </div>
+
+          <!-- Loading Indicator -->
+          <div v-if="isSending" class="max-w-3xl mx-auto p-4 rounded-lg bg-white shadow-sm">
+            <div class="flex items-center space-x-2">
+              <span class="text-2xl">{{ getPersonaIcon(chatStore.activeChat.personaId) }}</span>
+              <div class="flex space-x-1">
+                <div class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                <div class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                <div class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="chatStore.errorState" class="text-center text-red-500 p-4">
+            {{ chatStore.errorState }}
+          </div>
         </div>
 
         <!-- Message Input -->
@@ -224,4 +240,19 @@ watch(
 onMounted(() => {
   scrollToBottom()
 })
-</script> 
+</script>
+
+<style scoped>
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+</style> 
