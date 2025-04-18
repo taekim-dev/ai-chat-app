@@ -214,8 +214,15 @@ const getMessageText = (message: any): string => {
     return message.content
   }
 
-  // For agent messages, content is already properly formatted
-  return message.content
+  // For agent messages, parse the content if it's a JSON string
+  try {
+    const content = typeof message.content === 'string' 
+      ? JSON.parse(message.content)
+      : message.content
+    return content.content || message.content
+  } catch {
+    return message.content
+  }
 }
 
 const formatMessageHtml = (message: any): string => {
