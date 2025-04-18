@@ -47,13 +47,22 @@ export const useChatStore = defineStore('chat', {
       storage.saveChats(this.chatList)
 
       try {
-        // Send message to API with persona ID
-        const reply = await api.sendMessage(content, this.activeChat.personaId)
+        // Send message to API with persona ID and celebrityId if it exists
+        const reply = await api.sendMessage(
+          content, 
+          this.activeChat.personaId,
+          this.activeChat.celebrityId
+        )
         
+        // Store celebrityId if it's a mystery persona and we received one
+        if (this.activeChat.personaId === 'mystery' && reply.celebrity && !this.activeChat.celebrityId) {
+          this.activeChat.celebrityId = reply.celebrity
+        }
+
         // Create and add AI response
         const aiMessage: Message = {
           id: uuidv4(),
-          content: reply,
+          content: reply.content,
           type: 'agent',
           status: 'sent',
           createdAt: new Date(),

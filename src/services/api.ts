@@ -2,19 +2,29 @@ import type { Message } from '@/types'
 
 const API_URL = 'https://ai-chat-serveless.vercel.app/api/chat'
 
-export async function sendMessage(content: string, personaId: string): Promise<string> {
+interface ApiResponse {
+  content: string
+  celebrity?: string
+}
+
+export async function sendMessage(
+  message: string, 
+  personaId: string,
+  celebrityId?: string
+): Promise<ApiResponse> {
   try {
     console.log('Sending request to:', API_URL)
-    console.log('Request payload:', { message: content, personaId })
+    console.log('Request payload:', { message, personaId, celebrityId })
     
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        message: content,
-        personaId 
+      body: JSON.stringify({
+        message,
+        personaId,
+        celebrityId
       })
     })
 
@@ -29,7 +39,7 @@ export async function sendMessage(content: string, personaId: string): Promise<s
 
     const data = await response.json()
     console.log('Response data:', data)
-    return data.reply || 'No response'
+    return data.reply
   } catch (error) {
     console.error('Error sending message:', error)
     throw error

@@ -13,9 +13,10 @@ export interface Message {
 export interface Chat {
   id: string
   personaId: string
+  messages: Message[]
   createdAt: Date
   updatedAt: Date
-  messages: Message[]
+  celebrityId?: string
 }
 
 export interface Persona {
