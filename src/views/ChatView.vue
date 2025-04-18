@@ -94,15 +94,21 @@
             :class="[
               'max-w-3xl mx-auto p-4 rounded-lg',
               message.type === 'user'
-                ? 'bg-primary text-white ml-auto'
+                ? 'bg-primary text-white font-medium text-shadow ml-auto'
                 : 'bg-white shadow-sm'
             ]"
           >
-            <div v-html="formatMessageHtml(message)" class="leading-relaxed"></div>
+            <div 
+              v-html="formatMessageHtml(message)" 
+              class="leading-relaxed text-base"
+              :class="[
+                message.type === 'user' ? 'text-white' : ''
+              ]"
+            ></div>
             <div 
               :class="[
                 'text-xs mt-1',
-                message.type === 'user' ? 'text-white/70' : 'text-gray-500'
+                message.type === 'user' ? 'text-white/80' : 'text-gray-500'
               ]"
             >
               {{ formatTime(message.createdAt) }}
@@ -162,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
 import { format } from 'date-fns'
@@ -255,12 +261,26 @@ const formatMessageHtml = (message: any): string => {
     .replace(/&/g, "&amp;")        // sanitize HTML
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
+    // Convert markdown-style bold text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Convert markdown-style italic text
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
 
   return `<p>${text
     .split('\n\n')
     .map(paragraph => paragraph.replace(/\n/g, '<br>'))
     .join('</p><p>')}</p>`
 }
+
+// Add some basic styles for the formatted text
+const messageStyle = computed(() => ({
+  '& strong': {
+    fontWeight: 600
+  },
+  '& em': {
+    fontStyle: 'italic'
+  }
+}))
 
 // Watch for new messages and scroll to bottom
 watch(
@@ -286,5 +306,9 @@ onMounted(() => {
 
 .animate-bounce {
   animation: bounce 1s infinite;
+}
+
+.text-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 </style> 
