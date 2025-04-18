@@ -1,27 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
-
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    name: 'home',
-    component: () => import('@/views/HomeView.vue')
-  },
-  {
-    path: '/chat',
-    name: 'chat',
-    component: () => import('@/views/ChatView.vue')
-  },
-  {
-    path: '/new-chat',
-    name: 'new-chat',
-    component: () => import('@/views/NewChatView.vue')
-  }
-]
+import HomeView from '@/views/HomeView.vue'
+import ChatView from '@/views/ChatView.vue'
+import NewChatView from '@/views/NewChatView.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView
+    },
+    {
+      path: '/chat/:chatId?',  // Optional parameter for chat ID
+      name: 'chat',
+      component: ChatView
+    },
+    {
+      path: '/new-chat',
+      name: 'new-chat',
+      component: NewChatView
+    }
+  ]
 })
 
 export default router 

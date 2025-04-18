@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import * as api from '@/services/api'
 import { storage } from '@/services/storage'
 import { syncService } from '@/services/sync'
+import { useRouter } from 'vue-router'
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
@@ -28,6 +29,36 @@ export const useChatStore = defineStore('chat', {
       if (savedChats) {
         this.chatList = savedChats
       }
+    },
+
+    // Initialize with specific chat ID (for URL-based navigation)
+    initializeWithChat(chatId: string | null) {
+      // First load saved chats
+      const savedChats = storage.loadChats()
+      if (savedChats) {
+        this.chatList = savedChats
+      }
+      
+      if (chatId) {
+        // Try to find the specific chat by ID
+        const chat = this.chatList.find(c => c.id === chatId)
+        if (chat) {
+          this.activeChat = chat
+          this.errorState = null
+          return true
+        }
+      }
+      
+      // If no chat ID provided or chat not found, set most recent chat as active
+      if (this.chatList.length > 0) {
+        const mostRecentChat = [...this.chatList].sort((a, b) => 
+          b.updatedAt.getTime() - a.updatedAt.getTime()
+        )[0]
+        this.setActiveChat(mostRecentChat.id)
+        return true
+      }
+      
+      return false
     },
 
     async sendMessage(content: string) {
@@ -154,7 +185,19 @@ export const useChatStore = defineStore('chat', {
     removeChat(chatId: string) {
       this.chatList = this.chatList.filter(chat => chat.id !== chatId)
       if (this.activeChat?.id === chatId) {
-        this.activeChat = this.chatList[0] || null
+        // Set most recent remaining chat as active
+        const mostRecentChat = [...this.chatList].sort((a, b) => 
+          b.updatedAt.getTime() - a.updatedAt.getTime()
+        )[0]
+        this.activeChat = mostRecentChat || null
+        
+        // Update URL to reflect the new active chat
+        const router = useRouter()
+        if (this.activeChat) {
+          router.replace({ name: 'chat', params: { chatId: this.activeChat.id } })
+        } else {
+          router.replace({ name: 'chat' })
+        }
       }
       storage.saveChats(this.chatList)
     }

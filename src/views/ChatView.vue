@@ -166,7 +166,10 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
 import { format } from 'date-fns'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
+const router = useRouter()
 const chatStore = useChatStore()
 const personaStore = usePersonaStore()
 
@@ -174,6 +177,27 @@ const newMessage = ref('')
 const isSending = ref(false)
 const isSidebarOpen = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
+
+// Initialize chat from route parameter
+onMounted(async () => {
+  const chatId = route.params.chatId as string | null
+  const hasChat = chatStore.initializeWithChat(chatId)
+  
+  // If no chat was found/set, redirect to new chat
+  if (!hasChat) {
+    router.replace({ name: 'new-chat' })
+  }
+})
+
+// Watch for route changes to update active chat
+watch(
+  () => route.params.chatId,
+  (newChatId) => {
+    if (newChatId && newChatId !== chatStore.activeChat?.id) {
+      chatStore.setActiveChat(newChatId as string)
+    }
+  }
+)
 
 const getPersonaIcon = (personaId: string) => {
   return personaStore.getPersonaById(personaId)?.icon || '👤'
@@ -187,8 +211,9 @@ const formatTime = (date: Date) => {
   return format(date, 'h:mm a')
 }
 
-const selectChatAndCloseSidebar = (chatId: string) => {
-  chatStore.setActiveChat(chatId)
+const selectChatAndCloseSidebar = async (chatId: string) => {
+  // Update the route first, using replace to avoid building up history
+  await router.replace({ name: 'chat', params: { chatId } })
   isSidebarOpen.value = false
 }
 
