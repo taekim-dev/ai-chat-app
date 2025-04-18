@@ -102,8 +102,36 @@ export const useChatStore = defineStore('chat', {
       this.chatList.push(newChat)
       this.activeChat = newChat
       
+      // Add welcome message based on persona
+      const welcomeMessage: Message = {
+        id: uuidv4(),
+        type: 'agent',
+        status: 'sent',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        content: this.getWelcomeMessage(persona.id)
+      }
+      
+      newChat.messages.push(welcomeMessage)
       storage.saveChats(this.chatList)
       return newChat
+    },
+
+    getWelcomeMessage(personaId: string): string {
+      const messages: Record<string, string> = {
+        therapist: "You are talking with a professional therapist. Feel free to share your thoughts and feelings in a safe, confidential space.",
+        tutor: "You are talking with a language tutor. Feel free to practice and ask any questions about language learning.",
+        chef: "You are talking with a master chef. Feel free to ask about recipes, cooking techniques, and culinary tips.",
+        trainer: "You are talking with a fitness trainer. Feel free to ask about workouts, nutrition, and achieving your fitness goals.",
+        mystery: "You are talking with a well-known celebrity! They'll share authentic stories and experiences, but won't reveal their identity directly. Try to guess who they are through your conversation!"
+      }
+      
+      // Format the message in the same structure as API responses
+      const content = {
+        content: messages[personaId] || "Welcome to the chat!"
+      }
+      
+      return JSON.stringify(content)
     },
 
     setActiveChat(chatId: string) {
