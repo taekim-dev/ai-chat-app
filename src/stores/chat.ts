@@ -5,13 +5,15 @@ import * as api from '@/services/api'
 import { storage } from '@/services/storage'
 import { syncService } from '@/services/sync'
 import { useRouter } from 'vue-router'
+import { db } from '@/services/db'
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
     chatList: [],
     activeChat: null,
     errorState: null,
-    isSyncing: false
+    isSyncing: false,
+    isInitialized: false
   }),
 
   getters: {
@@ -30,23 +32,27 @@ export const useChatStore = defineStore('chat', {
   },
 
   actions: {
-    initialize() {
-      const savedChats = storage.loadChats()
-      if (savedChats) {
-        this.chatList = savedChats
+    async initialize() {
+      try {
+        // Initialize IndexedDB
+        await db.init()
+        const savedChats = await storage.loadChats()
+        if (savedChats) {
+          this.chatList = savedChats
+        }
+        this.isInitialized = true
+      } catch (error) {
+        console.error('Failed to initialize store:', error)
+        this.errorState = 'Failed to load chats. Please try refreshing the page.'
       }
     },
 
-    // Initialize with specific chat ID (for URL-based navigation)
-    initializeWithChat(chatId: string | null) {
-      // First load saved chats
-      const savedChats = storage.loadChats()
-      if (savedChats) {
-        this.chatList = savedChats
+    async initializeWithChat(chatId: string | null) {
+      if (!this.isInitialized) {
+        await this.initialize()
       }
       
       if (chatId) {
-        // Try to find the specific chat by ID
         const chat = this.chatList.find(c => c.id === chatId)
         if (chat) {
           this.activeChat = chat
@@ -55,7 +61,6 @@ export const useChatStore = defineStore('chat', {
         }
       }
       
-      // If no chat ID provided or chat not found, set most recent chat as active
       if (this.chatList.length > 0) {
         this.setActiveChat(this.mostRecentChat!.id)
         return true
@@ -67,7 +72,6 @@ export const useChatStore = defineStore('chat', {
     async sendMessage(content: string) {
       if (!this.activeChat) return
 
-      // Create and add user message
       const userMessage: Message = {
         id: uuidv4(),
         content,
@@ -78,22 +82,19 @@ export const useChatStore = defineStore('chat', {
       }
       
       this.activeChat.messages.push(userMessage)
-      storage.saveChats(this.chatList)
+      await storage.saveChats(this.chatList)
 
       try {
-        // Send message to API with persona ID and celebrityId if it exists
         const reply = await api.sendMessage(
           content, 
           this.activeChat.personaId,
           this.activeChat.celebrityId
         )
         
-        // Store celebrityId if it's a mystery persona and we received one
         if (this.activeChat.personaId === 'mystery' && reply.celebrity && !this.activeChat.celebrityId) {
           this.activeChat.celebrityId = reply.celebrity
         }
 
-        // Create and add AI response
         const aiMessage: Message = {
           id: uuidv4(),
           content: reply.content,
@@ -105,25 +106,22 @@ export const useChatStore = defineStore('chat', {
         
         userMessage.status = 'sent'
         this.activeChat.messages.push(aiMessage)
-        storage.saveChats(this.chatList)
+        await storage.saveChats(this.chatList)
         
-        // Sync in background - don't await or catch errors
         this.syncChats()
       } catch (error) {
         userMessage.status = 'error'
         this.errorState = 'Failed to send message. Please try again.'
-        storage.saveChats(this.chatList)
+        await storage.saveChats(this.chatList)
         throw error
       }
     },
 
-    // New method to handle sync separately
     syncChats() {
       try {
         syncService.broadcast('chats-updated', this.chatList)
       } catch (error) {
         console.warn('Failed to sync chats:', error)
-        // Don't set error state or throw - sync is non-critical
       }
     },
 
@@ -136,7 +134,6 @@ export const useChatStore = defineStore('chat', {
         messages: []
       }
 
-      // Remove oldest chat if limit reached
       if (this.chatList.length >= 5) {
         const sortedChats = this.sortedChatList
         this.chatList = this.chatList.filter(chat => chat.id !== sortedChats[4].id)
@@ -145,7 +142,6 @@ export const useChatStore = defineStore('chat', {
       this.chatList.push(newChat)
       this.activeChat = newChat
       
-      // Add welcome message based on persona
       const welcomeMessage: Message = {
         id: uuidv4(),
         type: 'agent',
@@ -156,7 +152,7 @@ export const useChatStore = defineStore('chat', {
       }
       
       newChat.messages.push(welcomeMessage)
-      storage.saveChats(this.chatList)
+      await storage.saveChats(this.chatList)
       return newChat
     },
 
@@ -169,7 +165,6 @@ export const useChatStore = defineStore('chat', {
         mystery: "You are talking with a well-known celebrity! They'll share authentic stories and experiences, but won't reveal their identity directly. Try to guess who they are through your conversation!"
       }
       
-      // Format the message in the same structure as API responses
       const content = {
         content: messages[personaId] || "Welcome to the chat!"
       }
@@ -185,13 +180,11 @@ export const useChatStore = defineStore('chat', {
       }
     },
 
-    removeChat(chatId: string) {
+    async removeChat(chatId: string) {
       this.chatList = this.chatList.filter(chat => chat.id !== chatId)
       if (this.activeChat?.id === chatId) {
-        // Set most recent remaining chat as active
         this.activeChat = this.mostRecentChat
         
-        // Update URL to reflect the new active chat
         const router = useRouter()
         if (this.activeChat) {
           router.replace({ name: 'chat', params: { chatId: this.activeChat.id } })
@@ -199,7 +192,7 @@ export const useChatStore = defineStore('chat', {
           router.replace({ name: 'chat' })
         }
       }
-      storage.saveChats(this.chatList)
+      await storage.saveChats(this.chatList)
     }
   }
 }) 

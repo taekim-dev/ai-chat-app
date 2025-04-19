@@ -10,7 +10,7 @@ import { useChatStore } from '@/stores/chat'
 
 const chatStore = useChatStore()
 
-onMounted(() => {
-  chatStore.initialize()
+onMounted(async () => {
+  await chatStore.initialize()
 })
 </script> 

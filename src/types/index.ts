@@ -31,6 +31,7 @@ export interface ChatState {
   activeChat: Chat | null
   errorState: string | null
   isSyncing: boolean
+  isInitialized: boolean
 }
 
 export interface SyncState {
