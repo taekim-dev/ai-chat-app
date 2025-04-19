@@ -12,7 +12,7 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/chat/:chatId?',  // Optional parameter for chat ID
+      path: '/chat/:chatId?',
       name: 'chat',
       component: ChatView
     },

@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import type { Chat, Message, ChatState, Persona } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import * as api from '@/services/api'
@@ -20,6 +19,13 @@ export const useChatStore = defineStore('chat', {
       return [...state.chatList].sort((a, b) => 
         b.updatedAt.getTime() - a.updatedAt.getTime()
       )
+    },
+    
+    mostRecentChat: (state) => {
+      if (state.chatList.length === 0) return null
+      return [...state.chatList].sort((a, b) => 
+        b.updatedAt.getTime() - a.updatedAt.getTime()
+      )[0]
     }
   },
 
@@ -51,10 +57,7 @@ export const useChatStore = defineStore('chat', {
       
       // If no chat ID provided or chat not found, set most recent chat as active
       if (this.chatList.length > 0) {
-        const mostRecentChat = [...this.chatList].sort((a, b) => 
-          b.updatedAt.getTime() - a.updatedAt.getTime()
-        )[0]
-        this.setActiveChat(mostRecentChat.id)
+        this.setActiveChat(this.mostRecentChat!.id)
         return true
       }
       
@@ -186,10 +189,7 @@ export const useChatStore = defineStore('chat', {
       this.chatList = this.chatList.filter(chat => chat.id !== chatId)
       if (this.activeChat?.id === chatId) {
         // Set most recent remaining chat as active
-        const mostRecentChat = [...this.chatList].sort((a, b) => 
-          b.updatedAt.getTime() - a.updatedAt.getTime()
-        )[0]
-        this.activeChat = mostRecentChat || null
+        this.activeChat = this.mostRecentChat
         
         // Update URL to reflect the new active chat
         const router = useRouter()

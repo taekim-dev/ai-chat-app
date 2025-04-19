@@ -22,7 +22,7 @@
           </button>
         </div>
 
-        <!-- Celebrity Chat (Centered) -->
+        <!-- Celebrity Chat -->
         <div class="flex justify-center mt-4">
           <button
             v-if="celebrityPersona"
@@ -67,7 +67,7 @@ const celebrityPersona = computed(() => {
 })
 
 async function startChat(persona: Persona) {
-  const chat = await chatStore.createChat(persona)
+  await chatStore.createChat(persona)
   router.push('/chat')
 }
 </script> 
