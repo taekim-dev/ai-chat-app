@@ -1,7 +1,8 @@
 export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_URL || 'https://ai-chat-serveless.vercel.app/api',
   TIMEOUT_MS: Number(import.meta.env.VITE_API_TIMEOUT) || 10000,
-  RETRY_ATTEMPTS: Number(import.meta.env.VITE_API_RETRY_ATTEMPTS) || 3
+  RETRY_ATTEMPTS: Number(import.meta.env.VITE_API_RETRY_ATTEMPTS) || 3,
+  API_KEY: import.meta.env.VITE_API_KEY || ''
 }
 
 export const RATE_LIMIT_CONFIG = {

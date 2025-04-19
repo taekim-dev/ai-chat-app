@@ -41,6 +41,8 @@ export async function sendMessage(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_CONFIG.API_KEY}`,
+          'X-App-Origin': window.location.origin
         },
         body: JSON.stringify({
           message,
