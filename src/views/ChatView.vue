@@ -143,14 +143,14 @@
               type="text"
               placeholder="Type a message..."
               class="input flex-1"
-              :disabled="isSending"
+              :disabled="isSending || isInputCoolingDown"
             >
             <button
               type="submit"
               class="btn btn-primary"
-              :disabled="isSending || !newMessage.trim()"
+              :disabled="isSending || isInputCoolingDown || !newMessage.trim()"
             >
-              Send
+              {{ isInputCoolingDown ? '...' : 'Send' }}
             </button>
           </form>
         </div>
@@ -173,6 +173,7 @@ import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
 import { format } from 'date-fns'
 import { useRoute, useRouter } from 'vue-router'
+import { rateLimiter } from '@/services/rateLimiter'
 
 const route = useRoute()
 const router = useRouter()
@@ -183,6 +184,8 @@ const newMessage = ref('')
 const isSending = ref(false)
 const isSidebarOpen = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
+const isInputCoolingDown = ref(false)
+const cooldownTimer = ref<number | null>(null)
 
 // Initialize chat from route parameter
 onMounted(async () => {
@@ -230,14 +233,34 @@ const scrollToBottom = async () => {
   }
 }
 
-const sendMessage = async () => {
-  if (!newMessage.value.trim() || isSending.value) return
+const startCooldown = (cooldownMs: number) => {
+  isInputCoolingDown.value = true
+  if (cooldownTimer.value) {
+    clearTimeout(cooldownTimer.value)
+  }
+  cooldownTimer.value = window.setTimeout(() => {
+    isInputCoolingDown.value = false
+  }, cooldownMs)
+}
 
-  isSending.value = true
-  await chatStore.sendMessage(newMessage.value)
+const sendMessage = async () => {
+  if (!newMessage.value.trim() || isSending.value || isInputCoolingDown.value) return
+
+  const message = newMessage.value
   newMessage.value = ''
-  isSending.value = false
-  await scrollToBottom()
+  isSending.value = true
+
+  try {
+    await chatStore.sendMessage(message)
+    const rateLimit = await rateLimiter.checkRateLimit(chatStore.activeChat!.id)
+    if (!rateLimit.allowed && rateLimit.cooldownMs) {
+      startCooldown(rateLimit.cooldownMs)
+    }
+  } catch (error) {
+    console.error('Failed to send message:', error)
+  } finally {
+    isSending.value = false
+  }
 }
 
 const getMessageText = (message: any): string => {

@@ -6,6 +6,7 @@ import { storage } from '@/services/storage'
 import { syncService } from '@/services/sync'
 import { useRouter } from 'vue-router'
 import { db } from '@/services/db'
+import { rateLimiter } from '@/services/rateLimiter'
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatState => ({
@@ -71,6 +72,17 @@ export const useChatStore = defineStore('chat', {
 
     async sendMessage(content: string) {
       if (!this.activeChat) return
+
+      // Check rate limit
+      const rateLimit = await rateLimiter.checkRateLimit(this.activeChat.id)
+      if (!rateLimit.allowed) {
+        if (rateLimit.reason) {
+          this.errorState = rateLimit.reason
+          return
+        }
+        // If no reason but not allowed, it's a cooldown - just return silently
+        return
+      }
 
       const userMessage: Message = {
         id: uuidv4(),
@@ -192,6 +204,8 @@ export const useChatStore = defineStore('chat', {
           router.replace({ name: 'chat' })
         }
       }
+      // Clear rate limits when removing a chat
+      rateLimiter.clearLimits(chatId)
       await storage.saveChats(this.chatList)
     }
   }
