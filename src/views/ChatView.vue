@@ -240,51 +240,21 @@ const selectChatAndCloseSidebar = async (chatId: string) => {
 }
 
 const scrollToBottom = async () => {
-  if (messagesContainer.value) {
-    const container = messagesContainer.value
-    // Only auto-scroll if user was already near bottom
-    const isNearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 100
-
-    if (isNearBottom) {
-      // Add a small delay to let users see the message start
-      setTimeout(() => {
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: 'smooth'
-        })
-      }, 500) // 500ms delay
-    }
-  }
-}
-
-// Watch for new messages and scroll to bottom only when sending
-watch(
-  () => chatStore.activeChat?.messages,
-  () => {
-    if (isSending.value) {
-      scrollToBottom()
-    }
-  },
-  { deep: true }
-)
-
-// For chat changes and initial load, scroll immediately
-const scrollImmediately = () => {
+  await nextTick()
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
   }
 }
 
-// Scroll immediately when chat changes
+// Watch for new messages and scroll to bottom
 watch(
-  () => chatStore.activeChat?.id,
-  () => {
-    nextTick(scrollImmediately)
-  }
+  () => chatStore.activeChat?.messages,
+  () => scrollToBottom(),
+  { deep: true }
 )
 
 onMounted(() => {
-  nextTick(scrollImmediately)
+  scrollToBottom()
 })
 
 const startCooldown = (cooldownMs: number) => {
