@@ -9,8 +9,18 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  test: {
-    globals: true,
-    environment: 'jsdom'
+  build: {
+    target: 'esnext',
+    minify: 'terser',
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['vue', 'pinia', 'vue-router'],
+          'date-fns': ['date-fns'],
+          'uuid': ['uuid']
+        }
+      }
+    }
   }
 }) 
