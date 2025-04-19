@@ -272,16 +272,6 @@ const formatMessageHtml = (message: any): string => {
     .join('</p><p>')}</p>`
 }
 
-// Add some basic styles for the formatted text
-const messageStyle = computed(() => ({
-  '& strong': {
-    fontWeight: 600
-  },
-  '& em': {
-    fontStyle: 'italic'
-  }
-}))
-
 // Watch for new messages and scroll to bottom
 watch(
   () => chatStore.activeChat?.messages,
