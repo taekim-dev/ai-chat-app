@@ -3,7 +3,7 @@ import { SYNC_CONFIG } from '@/config'
 import { NetworkError } from '@/utils/errors'
 import { validateChat } from '@/utils/validation'
 
-class SyncService {
+export class SyncService {
   private channel: BroadcastChannel | null = null
   private reconnectTimeout: number | null = null
   private isConnected = false
@@ -68,17 +68,28 @@ class SyncService {
         if (event.data.event === 'chats-updated') {
           // Convert ISO strings back to Date objects and validate
           const chats = event.data.data.map((chat: any) => {
-            const validChat = {
-              ...chat,
-              messages: chat.messages.map((msg: any) => ({
-                ...msg,
-                createdAt: new Date(msg.createdAt),
-                updatedAt: new Date(msg.updatedAt)
-              }))
+            try {
+              // Convert dates before validation
+              const processedChat = {
+                ...chat,
+                createdAt: new Date(chat.createdAt),
+                updatedAt: new Date(chat.updatedAt),
+                messages: chat.messages.map((msg: any) => ({
+                  ...msg,
+                  createdAt: new Date(msg.createdAt),
+                  updatedAt: new Date(msg.updatedAt)
+                }))
+              }
+              return validateChat(processedChat)
+            } catch (error) {
+              console.warn('Failed to process chat:', error)
+              return null
             }
-            return validateChat(validChat)
-          })
-          callback(chats)
+          }).filter((chat: Chat | null): chat is Chat => chat !== null)
+          
+          if (chats.length > 0) {
+            callback(chats)
+          }
         }
       } catch (error) {
         console.warn('Sync update failed:', error)

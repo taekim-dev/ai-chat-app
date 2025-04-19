@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { rateLimiter } from '../rateLimiter'
-import { syncService } from '../sync'
-import { NetworkError, ValidationError } from '@/utils/errors'
+import { syncService, SyncService } from '../sync'
+import { ValidationError } from '@/utils/errors'
 import { RATE_LIMIT_CONFIG } from '@/config'
+import { v4 as uuidv4 } from 'uuid'
 
 describe('RateLimiter', () => {
   const chatId = 'test-chat-id'
@@ -46,50 +47,99 @@ describe('RateLimiter', () => {
 })
 
 describe('SyncService', () => {
+  let mockChannel: any
+
   beforeEach(() => {
-    vi.stubGlobal('BroadcastChannel', class MockBroadcastChannel {
-      constructor(public name: string) {}
-      postMessage = vi.fn()
-      close = vi.fn()
+    mockChannel = {
+      postMessage: vi.fn(),
+      close: vi.fn(),
+      onmessage: null
+    }
+
+    vi.stubGlobal('BroadcastChannel', class {
+      constructor() {
+        return mockChannel
+      }
     })
+
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
     syncService.disconnect()
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
   })
 
-  it('should broadcast messages', () => {
+  it('should broadcast messages', async () => {
     const testData = [{
-      id: 'test-id',
+      id: uuidv4(),
       personaId: 'test-persona',
       messages: [],
       createdAt: new Date(),
       updatedAt: new Date()
     }]
 
-    syncService.broadcast('test-event', testData)
-    // Verify no errors thrown
+    // Create a new instance to use our fresh mock
+    const newSyncService = new SyncService()
+    newSyncService.broadcast('test-event', testData)
+    
+    // Wait for the setTimeout in broadcast
+    await vi.runAllTimersAsync()
+    
+    expect(mockChannel.postMessage).toHaveBeenCalledTimes(1)
   })
 
-  it('should handle updates', () => {
+  it('should handle updates', async () => {
     const callback = vi.fn()
-    syncService.onUpdate(callback)
+    const newSyncService = new SyncService()
+    newSyncService.onUpdate(callback)
 
-    const mockEvent = {
-      data: {
-        event: 'chats-updated',
-        data: [{
-          id: 'test-id',
-          personaId: 'test-persona',
-          messages: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }]
-      }
+    const now = new Date()
+    const mockEventData = {
+      event: 'chats-updated',
+      data: [{
+        id: uuidv4(),
+        personaId: 'test-persona',
+        messages: [{
+          id: uuidv4(),
+          type: 'user',
+          content: 'test message',
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+          status: 'sent'
+        }],
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      }]
     }
 
-    // @ts-ignore - we know this exists from the mock
-    syncService['channel'].onmessage(mockEvent)
-    expect(callback).toHaveBeenCalled()
+    // Create a proper MessageEvent
+    const mockEvent = new MessageEvent('message', {
+      data: mockEventData
+    })
+
+    // Trigger the onmessage handler
+    if (mockChannel.onmessage) {
+      mockChannel.onmessage(mockEvent)
+      await vi.runAllTimersAsync()
+      expect(callback).toHaveBeenCalledTimes(1)
+      expect(callback).toHaveBeenCalledWith(expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(String),
+          personaId: 'test-persona',
+          messages: expect.arrayContaining([
+            expect.objectContaining({
+              id: expect.any(String),
+              type: 'user',
+              content: 'test message',
+              status: 'sent'
+            })
+          ])
+        })
+      ]))
+    } else {
+      throw new Error('onmessage handler not set')
+    }
   })
 }) 
