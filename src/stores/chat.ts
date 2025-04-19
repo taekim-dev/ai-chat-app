@@ -73,6 +73,9 @@ export const useChatStore = defineStore('chat', {
     async sendMessage(content: string) {
       if (!this.activeChat) return
 
+      // Clear any existing error state
+      this.errorState = null
+
       // Check rate limit
       const rateLimit = await rateLimiter.checkRateLimit(this.activeChat.id)
       if (!rateLimit.allowed) {
@@ -122,8 +125,9 @@ export const useChatStore = defineStore('chat', {
         
         this.syncChats()
       } catch (error) {
-        userMessage.status = 'error'
+        console.error('Failed to send message:', error)
         this.errorState = 'Failed to send message. Please try again.'
+        userMessage.status = 'error'
         await storage.saveChats(this.chatList)
         throw error
       }
