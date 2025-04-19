@@ -32,6 +32,7 @@ export interface ChatState {
   errorState: string | null
   isSyncing: boolean
   isInitialized: boolean
+  lastFailedMessage: string | null
 }
 
 export interface SyncState {
