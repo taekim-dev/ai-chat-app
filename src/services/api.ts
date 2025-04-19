@@ -41,9 +41,8 @@ export async function sendMessage(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_CONFIG.API_KEY}`,
-          'X-App-Origin': window.location.origin
         },
+        credentials: 'include',
         body: JSON.stringify({
           message,
           personaId,
@@ -52,6 +51,13 @@ export async function sendMessage(
       },
       API_CONFIG.TIMEOUT_MS
     )
+
+    if (response.status === 401) {
+      await authenticate()
+      if (retryCount === 0) {
+        return sendMessage(message, personaId, celebrityId, retryCount + 1)
+      }
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
@@ -65,17 +71,33 @@ export async function sendMessage(
     const data = await response.json()
     console.log('Response data:', data)
     
-    // Validate the response data
     return validateApiResponse(data.reply)
   } catch (error) {
     console.error('Error sending message:', error)
     
-    // Retry logic for network errors
     if (error instanceof NetworkError && retryCount < API_CONFIG.RETRY_ATTEMPTS) {
       console.log(`Retrying request (attempt ${retryCount + 1})...`)
       return sendMessage(message, personaId, celebrityId, retryCount + 1)
     }
     
     throw error
+  }
+}
+
+export async function authenticate(): Promise<void> {
+  const response = await fetchWithTimeout(
+    `${API_CONFIG.BASE_URL}/auth`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    },
+    API_CONFIG.TIMEOUT_MS
+  )
+
+  if (!response.ok) {
+    throw new NetworkError('Authentication failed')
   }
 } 
