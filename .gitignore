@@ -46,4 +46,8 @@ coverage
 # Cache
 .npm
 .eslintcache
-.stylelintcache 
+.stylelintcache
+
+# TypeScript incremental compilation cache
+*.tsbuildinfo
+tsconfig.tsbuildinfo 
