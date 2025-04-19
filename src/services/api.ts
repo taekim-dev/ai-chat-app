@@ -42,7 +42,6 @@ export async function sendMessage(
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify({
           message,
           personaId,
@@ -51,13 +50,6 @@ export async function sendMessage(
       },
       API_CONFIG.TIMEOUT_MS
     )
-
-    if (response.status === 401) {
-      await authenticate()
-      if (retryCount === 0) {
-        return sendMessage(message, personaId, celebrityId, retryCount + 1)
-      }
-    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
