@@ -1,47 +1,79 @@
 import type { Message } from '@/types'
-
-const API_URL = 'https://ai-chat-serveless.vercel.app/api/chat'
+import { API_CONFIG } from '@/config'
+import { NetworkError } from '@/utils/errors'
+import { validateApiResponse } from '@/utils/validation'
 
 interface ApiResponse {
   content: string
   celebrity?: string
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    })
+    clearTimeout(id)
+    return response
+  } catch (error) {
+    clearTimeout(id)
+    throw error
+  }
+}
+
 export async function sendMessage(
   message: string, 
   personaId: string,
-  celebrityId?: string
+  celebrityId?: string,
+  retryCount = 0
 ): Promise<ApiResponse> {
   try {
-    console.log('Sending request to:', API_URL)
+    console.log('Sending request to:', `${API_CONFIG.BASE_URL}/chat`)
     console.log('Request payload:', { message, personaId, celebrityId })
     
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetchWithTimeout(
+      `${API_CONFIG.BASE_URL}/chat`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          personaId,
+          celebrityId
+        })
       },
-      body: JSON.stringify({
-        message,
-        personaId,
-        celebrityId
-      })
-    })
-
-    console.log('Response status:', response.status)
-    console.log('Response headers:', Object.fromEntries(response.headers))
+      API_CONFIG.TIMEOUT_MS
+    )
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
       console.error('Error response:', errorData)
-      throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`)
+      throw new NetworkError(
+        `Network response was not ok: ${response.status} ${response.statusText}`,
+        errorData
+      )
     }
 
     const data = await response.json()
     console.log('Response data:', data)
-    return data.reply
+    
+    // Validate the response data
+    return validateApiResponse(data.reply)
   } catch (error) {
     console.error('Error sending message:', error)
+    
+    // Retry logic for network errors
+    if (error instanceof NetworkError && retryCount < API_CONFIG.RETRY_ATTEMPTS) {
+      console.log(`Retrying request (attempt ${retryCount + 1})...`)
+      return sendMessage(message, personaId, celebrityId, retryCount + 1)
+    }
+    
     throw error
   }
 } 

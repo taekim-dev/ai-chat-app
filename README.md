@@ -1,26 +1,73 @@
-# AI Chat App
+# AI Chat Application
 
-A lightweight application for chatting with AI personas with persistent chat history.
+A Vue 3 + TypeScript chat application featuring multiple AI personas and real-time sync across tabs.
 
-## Quick Start
+## Features
 
-```bash
-# Install dependencies
-npm install
+- Multiple AI personas (Therapist, Tutor, Chef, Trainer)
+- Celebrity guessing game mode
+- Real-time sync across browser tabs
+- Offline support with IndexedDB
+- Rate limiting and error handling
+- TypeScript support
 
-# Start development server
-npm run dev
+## Project Structure
 
-# Run tests
-npm run test
+```
+src/
+├── assets/      # Static assets
+├── components/  # Vue components
+├── composables/ # Vue composables
+├── config/      # App configuration
+├── router/      # Vue Router setup
+├── services/    # Core services
+├── stores/      # Pinia stores
+├── styles/      # Global styles
+├── types/       # TypeScript types
+├── utils/       # Utilities
+└── views/       # Vue views
 ```
 
-## Tech Stack
+## Setup
 
-- Vue 3 + TypeScript
-- Pinia for state management
-- Tailwind CSS for styling
-- Vitest for testing
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Add environment variables:
+```bash
+cp .env.example .env
+```
+
+3. Run development server:
+```bash
+npm run dev
+```
+
+## Key Technologies
+
+- Vue 3
+- TypeScript
+- Pinia
+- Vue Router
+- IndexedDB
+- Tailwind CSS
+- Zod
+
+## Development
+
+- Use `npm run lint` to check code style
+- Use `npm run test` to run tests
+- Use `npm run build` to create production build
+
+## Architecture
+
+- Uses Pinia for state management
+- Implements service layer pattern
+- Follows composition API patterns
+- Includes error boundary handling
+- Features real-time sync via BroadcastChannel API
 
 ## Documentation
 

@@ -1,3 +1,6 @@
+import { RATE_LIMIT_CONFIG } from '@/config'
+import { ValidationError } from '@/utils/errors'
+
 interface ChatLimit {
   lastRequestTime: number
   totalMessages: number
@@ -11,10 +14,29 @@ export interface RateLimitResponse {
 
 export class RateLimiter {
   private limits: Map<string, ChatLimit> = new Map()
-  private readonly COOLDOWN_MS = 3000 // 3 seconds
-  private readonly MAX_MESSAGES = 30
+  private cleanupInterval: number | null = null
+
+  constructor() {
+    this.startCleanup()
+  }
+
+  private startCleanup(): void {
+    // Clean up old entries periodically
+    this.cleanupInterval = window.setInterval(() => {
+      const now = Date.now()
+      for (const [chatId, limit] of this.limits.entries()) {
+        if (now - limit.lastRequestTime > RATE_LIMIT_CONFIG.CLEANUP_INTERVAL_MS) {
+          this.limits.delete(chatId)
+        }
+      }
+    }, RATE_LIMIT_CONFIG.CLEANUP_INTERVAL_MS)
+  }
 
   async checkRateLimit(chatId: string): Promise<RateLimitResponse> {
+    if (!chatId) {
+      throw new ValidationError('Chat ID is required')
+    }
+
     let limit = this.limits.get(chatId)
     if (!limit) {
       limit = { lastRequestTime: 0, totalMessages: 0 }
@@ -25,15 +47,15 @@ export class RateLimiter {
     const timeSinceLastRequest = now - limit.lastRequestTime
 
     // Check cooldown
-    if (timeSinceLastRequest < this.COOLDOWN_MS) {
+    if (timeSinceLastRequest < RATE_LIMIT_CONFIG.COOLDOWN_MS) {
       return {
         allowed: false,
-        cooldownMs: this.COOLDOWN_MS - timeSinceLastRequest
+        cooldownMs: RATE_LIMIT_CONFIG.COOLDOWN_MS - timeSinceLastRequest
       }
     }
 
     // Check total messages
-    if (limit.totalMessages >= this.MAX_MESSAGES) {
+    if (limit.totalMessages >= RATE_LIMIT_CONFIG.MAX_MESSAGES_PER_CHAT) {
       return {
         allowed: false,
         reason: "You've reached the message limit for this chat. Please start a new chat to continue the conversation."
@@ -47,7 +69,18 @@ export class RateLimiter {
   }
 
   clearLimits(chatId: string): void {
+    if (!chatId) {
+      throw new ValidationError('Chat ID is required')
+    }
     this.limits.delete(chatId)
+  }
+
+  destroy(): void {
+    if (this.cleanupInterval !== null) {
+      clearInterval(this.cleanupInterval)
+      this.cleanupInterval = null
+    }
+    this.limits.clear()
   }
 }
 
