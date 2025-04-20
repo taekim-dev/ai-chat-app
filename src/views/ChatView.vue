@@ -51,11 +51,11 @@
     <div class="flex-1 flex flex-col w-full overflow-hidden">
       <div v-if="chatStore.activeChat" class="flex-1 flex flex-col h-full">
         <!-- Chat Header -->
-        <div class="h-16 px-4 flex items-center border-b bg-white flex-shrink-0">
+        <div class="h-16 px-4 flex items-center border-b bg-white flex-shrink-0 sticky top-0 z-10">
           <div class="flex items-center justify-between w-full relative">
             <!-- Hamburger Menu for Mobile -->
             <button
-              class="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+              class="md:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-600"
               @click="isSidebarOpen = !isSidebarOpen"
             >
               <svg
@@ -388,7 +388,7 @@ const retryMessage = async () => {
 }
 
 .message {
-  animation: fadeInMessage 0.5s ease-out forwards;
+  animation: fadeInMessage 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   transform-origin: top;
   will-change: transform, opacity;
 }
@@ -396,7 +396,7 @@ const retryMessage = async () => {
 @keyframes fadeInMessage {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
