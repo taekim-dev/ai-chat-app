@@ -95,18 +95,18 @@
             v-for="message in chatStore.activeChat?.messages"
             :key="message.id"
             :class="[
-              'message',
-              message.type === 'user' ? 'message-user' : 'message-agent',
+              'message flex',
+              message.type === 'user' ? 'justify-end' : 'justify-start',
               message.status === 'error' ? 'message-error' : '',
               message.status === 'pending' ? 'message-pending' : ''
             ]"
           >
             <div
               :class="[
-                'rounded-lg px-4 py-2 max-w-[80%] break-words',
+                'rounded-2xl px-4 py-3 max-w-[85%] break-words shadow-sm',
                 message.type === 'user'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700',
+                  ? 'bg-blue-500 text-white rounded-tr-none'
+                  : 'bg-white text-gray-900 rounded-tl-none border border-gray-100',
                 message.type === 'agent' ? 'typing-animation' : ''
               ]"
               v-html="formatMessageHtml(message)"
