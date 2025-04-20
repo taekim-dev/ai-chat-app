@@ -41,10 +41,10 @@ export function validateApiResponse(data: unknown): { content: string; celebrity
     content: z.string(),
     celebrity: z.string().optional()
   })
-  
+
   try {
     return ApiResponseSchema.parse(data)
   } catch (error) {
     throw new ValidationError('Invalid API response', error)
   }
-} 
+}

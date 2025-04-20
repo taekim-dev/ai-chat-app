@@ -8,7 +8,11 @@ interface ApiResponse {
   celebrity?: string
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeoutMs: number
+): Promise<Response> {
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), timeoutMs)
 
@@ -26,7 +30,7 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: nu
 }
 
 export async function sendMessage(
-  message: string, 
+  message: string,
   personaId: string,
   celebrityId?: string,
   retryCount = 0
@@ -34,14 +38,14 @@ export async function sendMessage(
   try {
     console.log('Sending request to:', `${API_CONFIG.BASE_URL}/chat`)
     console.log('Request payload:', { message, personaId, celebrityId })
-    
+
     const response = await fetchWithTimeout(
       `${API_CONFIG.BASE_URL}/chat`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_CONFIG.API_KEY}`
+          Authorization: `Bearer ${API_CONFIG.API_KEY}`
         },
         body: JSON.stringify({
           message,
@@ -63,16 +67,16 @@ export async function sendMessage(
 
     const data = await response.json()
     console.log('Response data:', data)
-    
+
     return validateApiResponse(data.reply)
   } catch (error) {
     console.error('Error sending message:', error)
-    
+
     if (error instanceof NetworkError && retryCount < API_CONFIG.RETRY_ATTEMPTS) {
       console.log(`Retrying request (attempt ${retryCount + 1})...`)
       return sendMessage(message, personaId, celebrityId, retryCount + 1)
     }
-    
+
     throw error
   }
 }
@@ -93,4 +97,4 @@ export async function authenticate(): Promise<void> {
   if (!response.ok) {
     throw new NetworkError('Authentication failed')
   }
-} 
+}

@@ -1,14 +1,14 @@
 <template>
   <div class="flex h-screen bg-gray-50">
     <!-- Mobile Overlay -->
-    <div 
-      v-if="isSidebarOpen" 
+    <div
+      v-if="isSidebarOpen"
       class="fixed inset-0 bg-black bg-opacity-50 md:hidden z-20"
       @click="isSidebarOpen = false"
     ></div>
 
     <!-- Chat List Sidebar -->
-    <div 
+    <div
       :class="[
         'fixed md:relative w-64 bg-white border-r flex flex-col z-30 h-full transition-transform duration-300 ease-in-out',
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
@@ -25,13 +25,11 @@
           <button
             v-for="chat in chatStore.sortedChatList"
             :key="chat.id"
-            @click="selectChatAndCloseSidebar(chat.id)"
             :class="[
               'w-full p-3 text-left rounded-lg transition-colors',
-              chat.id === chatStore.activeChat?.id
-                ? 'bg-primary text-white'
-                : 'hover:bg-gray-100'
+              chat.id === chatStore.activeChat?.id ? 'bg-primary text-white' : 'hover:bg-gray-100'
             ]"
+            @click="selectChatAndCloseSidebar(chat.id)"
           >
             <div class="flex items-center space-x-2">
               <span class="text-xl">{{ getPersonaIcon(chat.personaId) }}</span>
@@ -43,10 +41,7 @@
 
       <!-- Start New Chat Button (Fixed at bottom) -->
       <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
-        <router-link
-          to="/new-chat"
-          class="btn btn-primary w-full block text-center"
-        >
+        <router-link to="/new-chat" class="btn btn-primary w-full block text-center">
           Start New Chat
         </router-link>
       </div>
@@ -59,12 +54,23 @@
         <div class="h-16 px-4 flex items-center border-b bg-white flex-shrink-0">
           <div class="flex items-center justify-between w-full relative">
             <!-- Hamburger Menu for Mobile -->
-            <button 
+            <button
               class="md:hidden p-2 hover:bg-gray-100 rounded-lg"
               @click="isSidebarOpen = !isSidebarOpen"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
 
@@ -84,10 +90,7 @@
         </div>
 
         <!-- Messages -->
-        <div 
-          ref="messagesContainer"
-          class="flex-1 overflow-y-auto p-4 space-y-4"
-        >
+        <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
           <div
             v-for="message in chatStore.activeChat.messages"
             :key="message.id"
@@ -98,18 +101,13 @@
                 : 'bg-white shadow-sm'
             ]"
           >
-            <div 
-              v-html="formatMessageHtml(message)" 
+            <div
               class="leading-relaxed text-base"
-              :class="[
-                message.type === 'user' ? 'text-white' : ''
-              ]"
+              :class="[message.type === 'user' ? 'text-white' : '']"
+              v-html="formatMessageHtml(message)"
             ></div>
-            <div 
-              :class="[
-                'text-xs mt-1',
-                message.type === 'user' ? 'text-white/80' : 'text-gray-500'
-              ]"
+            <div
+              :class="['text-xs mt-1', message.type === 'user' ? 'text-white/80' : 'text-gray-500']"
             >
               {{ formatTime(message.createdAt) }}
             </div>
@@ -120,28 +118,46 @@
             <div class="flex items-center space-x-2">
               <span class="text-2xl">{{ getPersonaIcon(chatStore.activeChat.personaId) }}</span>
               <div class="flex space-x-1">
-                <div class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                <div class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                <div
+                  class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
+                  style="animation-delay: 0s"
+                ></div>
+                <div
+                  class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
+                  style="animation-delay: 0.2s"
+                ></div>
+                <div
+                  class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
+                  style="animation-delay: 0.4s"
+                ></div>
               </div>
             </div>
           </div>
 
           <!-- Global Error Message -->
-          <div 
-            v-if="chatStore.errorState" 
+          <div
+            v-if="chatStore.errorState"
             class="max-w-3xl mx-auto p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-center justify-between"
           >
             <div class="flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd"
+                />
               </svg>
               <span>{{ chatStore.errorState }}</span>
             </div>
-            <button 
+            <button
               v-if="chatStore.lastFailedMessage"
-              @click="retryMessage"
               class="px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm font-medium transition-colors"
+              @click="retryMessage"
             >
               Retry
             </button>
@@ -150,14 +166,14 @@
 
         <!-- Message Input -->
         <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
-          <form @submit.prevent="sendMessage" class="flex space-x-4 w-full">
+          <form class="flex space-x-4 w-full" @submit.prevent="sendMessage">
             <input
               v-model="newMessage"
               type="text"
               placeholder="Type a message..."
               class="input flex-1"
               :disabled="isSending || isInputCoolingDown"
-            >
+            />
             <button
               type="submit"
               class="btn btn-primary"
@@ -170,10 +186,7 @@
       </div>
 
       <!-- No Active Chat -->
-      <div 
-        v-else 
-        class="flex-1 flex items-center justify-center text-gray-500"
-      >
+      <div v-else class="flex-1 flex items-center justify-center text-gray-500">
         Select a chat or start a new conversation
       </div>
     </div>
@@ -204,7 +217,7 @@ const cooldownTimer = ref<number | null>(null)
 onMounted(async () => {
   const chatId = route.params.chatId as string | null
   const hasChat = chatStore.initializeWithChat(chatId)
-  
+
   // If no chat was found/set, redirect to new chat
   if (!hasChat) {
     router.replace({ name: 'new-chat' })
@@ -214,7 +227,7 @@ onMounted(async () => {
 // Watch for route changes to update active chat
 watch(
   () => route.params.chatId,
-  (newChatId) => {
+  newChatId => {
     if (newChatId && newChatId !== chatStore.activeChat?.id) {
       chatStore.setActiveChat(newChatId as string)
     }
@@ -294,9 +307,8 @@ const getMessageText = (message: any): string => {
 
   // For agent messages, parse the content if it's a JSON string
   try {
-    const content = typeof message.content === 'string' 
-      ? JSON.parse(message.content)
-      : message.content
+    const content =
+      typeof message.content === 'string' ? JSON.parse(message.content) : message.content
     return content.content || message.content
   } catch {
     return message.content
@@ -305,9 +317,9 @@ const getMessageText = (message: any): string => {
 
 const formatMessageHtml = (message: any): string => {
   const text = getMessageText(message)
-    .replace(/&/g, "&amp;")        // sanitize HTML
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
+    .replace(/&/g, '&amp;') // sanitize HTML
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     // Convert markdown-style bold text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     // Convert markdown-style italic text
@@ -337,7 +349,8 @@ const retryMessage = async () => {
 
 <style scoped>
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -352,4 +365,4 @@ const retryMessage = async () => {
 .text-shadow {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>

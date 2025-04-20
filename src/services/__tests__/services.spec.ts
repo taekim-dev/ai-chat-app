@@ -56,11 +56,14 @@ describe('SyncService', () => {
       onmessage: null
     }
 
-    vi.stubGlobal('BroadcastChannel', class {
-      constructor() {
-        return mockChannel
+    vi.stubGlobal(
+      'BroadcastChannel',
+      class {
+        constructor() {
+          return mockChannel
+        }
       }
-    })
+    )
 
     vi.useFakeTimers()
   })
@@ -72,21 +75,23 @@ describe('SyncService', () => {
   })
 
   it('should broadcast messages', async () => {
-    const testData = [{
-      id: uuidv4(),
-      personaId: 'test-persona',
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }]
+    const testData = [
+      {
+        id: uuidv4(),
+        personaId: 'test-persona',
+        messages: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
 
     // Create a new instance to use our fresh mock
     const newSyncService = new SyncService()
     newSyncService.broadcast('test-event', testData)
-    
+
     // Wait for the setTimeout in broadcast
     await vi.runAllTimersAsync()
-    
+
     expect(mockChannel.postMessage).toHaveBeenCalledTimes(1)
   })
 
@@ -98,20 +103,24 @@ describe('SyncService', () => {
     const now = new Date()
     const mockEventData = {
       event: 'chats-updated',
-      data: [{
-        id: uuidv4(),
-        personaId: 'test-persona',
-        messages: [{
+      data: [
+        {
           id: uuidv4(),
-          type: 'user',
-          content: 'test message',
+          personaId: 'test-persona',
+          messages: [
+            {
+              id: uuidv4(),
+              type: 'user',
+              content: 'test message',
+              createdAt: now.toISOString(),
+              updatedAt: now.toISOString(),
+              status: 'sent'
+            }
+          ],
           createdAt: now.toISOString(),
-          updatedAt: now.toISOString(),
-          status: 'sent'
-        }],
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString()
-      }]
+          updatedAt: now.toISOString()
+        }
+      ]
     }
 
     // Create a proper MessageEvent
@@ -124,22 +133,24 @@ describe('SyncService', () => {
       mockChannel.onmessage(mockEvent)
       await vi.runAllTimersAsync()
       expect(callback).toHaveBeenCalledTimes(1)
-      expect(callback).toHaveBeenCalledWith(expect.arrayContaining([
-        expect.objectContaining({
-          id: expect.any(String),
-          personaId: 'test-persona',
-          messages: expect.arrayContaining([
-            expect.objectContaining({
-              id: expect.any(String),
-              type: 'user',
-              content: 'test message',
-              status: 'sent'
-            })
-          ])
-        })
-      ]))
+      expect(callback).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            personaId: 'test-persona',
+            messages: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(String),
+                type: 'user',
+                content: 'test message',
+                status: 'sent'
+              })
+            ])
+          })
+        ])
+      )
     } else {
       throw new Error('onmessage handler not set')
     }
   })
-}) 
+})

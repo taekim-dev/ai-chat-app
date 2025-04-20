@@ -32,14 +32,15 @@ export const usePersonaStore = defineStore('persona', {
         id: 'mystery',
         name: 'Celebrity Chat',
         icon: '🌟',
-        description: 'Chat with a surprise global celebrity - could be a sports star, musician, or other popular figure'
+        description:
+          'Chat with a surprise global celebrity - could be a sports star, musician, or other popular figure'
       }
     ] as Persona[]
   }),
 
   getters: {
-    getPersonaById: (state) => {
+    getPersonaById: state => {
       return (id: string) => state.personas.find(p => p.id === id)
     }
   }
-}) 
+})

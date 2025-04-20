@@ -37,4 +37,4 @@ export interface ChatState {
 
 export interface SyncState {
   syncedChatList: Chat[]
-} 
+}

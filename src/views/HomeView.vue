@@ -2,10 +2,10 @@
   <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
       <h1 class="text-4xl font-bold text-center mb-8">AI Chat App</h1>
-      
+
       <div v-if="chatStore.chatList.length > 0" class="space-y-4">
-        <div 
-          v-for="chat in chatStore.sortedChatList" 
+        <div
+          v-for="chat in chatStore.sortedChatList"
           :key="chat.id"
           class="bg-white rounded-lg shadow p-4 flex items-center justify-between"
         >
@@ -18,33 +18,20 @@
               </p>
             </div>
           </div>
-          
+
           <div class="flex space-x-2">
-            <button 
-              @click="openChat(chat.id)"
-              class="btn btn-primary"
-            >
-              Continue
-            </button>
-            <button 
-              @click="removeChat(chat.id)"
-              class="btn bg-red-500 text-white hover:bg-red-600"
-            >
+            <button class="btn btn-primary" @click="openChat(chat.id)">Continue</button>
+            <button class="btn bg-red-500 text-white hover:bg-red-600" @click="removeChat(chat.id)">
               Delete
             </button>
           </div>
         </div>
       </div>
 
-      <div v-else class="text-center text-gray-500">
-        No chats yet. Start a new conversation!
-      </div>
+      <div v-else class="text-center text-gray-500">No chats yet. Start a new conversation!</div>
 
       <div class="mt-8 text-center">
-        <router-link 
-          to="/new-chat"
-          class="btn btn-primary text-lg px-6 py-3"
-        >
+        <router-link to="/new-chat" class="btn btn-primary text-lg px-6 py-3">
           Start New Chat
         </router-link>
       </div>
@@ -99,7 +86,7 @@ const removeChat = (chatId: string) => {
   display: inline-block;
   margin-top: 2rem;
   padding: 1rem 2rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   text-decoration: none;
   border-radius: 4px;
@@ -109,4 +96,4 @@ const removeChat = (chatId: string) => {
 .chat-link:hover {
   background-color: #45a049;
 }
-</style> 
+</style>

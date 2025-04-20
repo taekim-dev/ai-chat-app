@@ -19,17 +19,13 @@ export const useChatStore = defineStore('chat', {
   }),
 
   getters: {
-    sortedChatList: (state) => {
-      return [...state.chatList].sort((a, b) => 
-        b.updatedAt.getTime() - a.updatedAt.getTime()
-      )
+    sortedChatList: state => {
+      return [...state.chatList].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     },
-    
-    mostRecentChat: (state) => {
+
+    mostRecentChat: state => {
       if (state.chatList.length === 0) return null
-      return [...state.chatList].sort((a, b) => 
-        b.updatedAt.getTime() - a.updatedAt.getTime()
-      )[0]
+      return [...state.chatList].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0]
     }
   },
 
@@ -53,7 +49,7 @@ export const useChatStore = defineStore('chat', {
       if (!this.isInitialized) {
         await this.initialize()
       }
-      
+
       if (chatId) {
         const chat = this.chatList.find(c => c.id === chatId)
         if (chat) {
@@ -62,12 +58,12 @@ export const useChatStore = defineStore('chat', {
           return true
         }
       }
-      
+
       if (this.chatList.length > 0) {
         this.setActiveChat(this.mostRecentChat!.id)
         return true
       }
-      
+
       return false
     },
 
@@ -97,18 +93,22 @@ export const useChatStore = defineStore('chat', {
         createdAt: new Date(),
         updatedAt: new Date()
       }
-      
+
       this.activeChat.messages.push(userMessage)
       await storage.saveChats(this.chatList)
 
       try {
         const reply = await api.sendMessage(
-          content, 
+          content,
           this.activeChat.personaId,
           this.activeChat.celebrityId
         )
-        
-        if (this.activeChat.personaId === 'mystery' && reply.celebrity && !this.activeChat.celebrityId) {
+
+        if (
+          this.activeChat.personaId === 'mystery' &&
+          reply.celebrity &&
+          !this.activeChat.celebrityId
+        ) {
           this.activeChat.celebrityId = reply.celebrity
         }
 
@@ -120,11 +120,11 @@ export const useChatStore = defineStore('chat', {
           createdAt: new Date(),
           updatedAt: new Date()
         }
-        
+
         userMessage.status = 'sent'
         this.activeChat.messages.push(aiMessage)
         await storage.saveChats(this.chatList)
-        
+
         this.syncChats()
       } catch (error) {
         console.error('Failed to send message:', error)
@@ -168,7 +168,7 @@ export const useChatStore = defineStore('chat', {
 
       this.chatList.push(newChat)
       this.activeChat = newChat
-      
+
       const welcomeMessage: Message = {
         id: uuidv4(),
         type: 'agent',
@@ -177,7 +177,7 @@ export const useChatStore = defineStore('chat', {
         updatedAt: new Date(),
         content: this.getWelcomeMessage(persona.id)
       }
-      
+
       newChat.messages.push(welcomeMessage)
       await storage.saveChats(this.chatList)
       return newChat
@@ -185,17 +185,21 @@ export const useChatStore = defineStore('chat', {
 
     getWelcomeMessage(personaId: string): string {
       const messages: Record<string, string> = {
-        therapist: "You are talking with a professional therapist. Feel free to share your thoughts and feelings in a safe, confidential space.",
-        tutor: "You are talking with a language tutor. Feel free to practice and ask any questions about language learning.",
-        chef: "You are talking with a master chef. Feel free to ask about recipes, cooking techniques, and culinary tips.",
-        trainer: "You are talking with a fitness trainer. Feel free to ask about workouts, nutrition, and achieving your fitness goals.",
-        mystery: "You are talking with a well-known celebrity! They'll share authentic stories and experiences, but won't reveal their identity directly. Try to guess who they are through your conversation!"
+        therapist:
+          'You are talking with a professional therapist. Feel free to share your thoughts and feelings in a safe, confidential space.',
+        tutor:
+          'You are talking with a language tutor. Feel free to practice and ask any questions about language learning.',
+        chef: 'You are talking with a master chef. Feel free to ask about recipes, cooking techniques, and culinary tips.',
+        trainer:
+          'You are talking with a fitness trainer. Feel free to ask about workouts, nutrition, and achieving your fitness goals.',
+        mystery:
+          "You are talking with a well-known celebrity! They'll share authentic stories and experiences, but won't reveal their identity directly. Try to guess who they are through your conversation!"
       }
-      
+
       const content = {
-        content: messages[personaId] || "Welcome to the chat!"
+        content: messages[personaId] || 'Welcome to the chat!'
       }
-      
+
       return JSON.stringify(content)
     },
 
@@ -211,7 +215,7 @@ export const useChatStore = defineStore('chat', {
       this.chatList = this.chatList.filter(chat => chat.id !== chatId)
       if (this.activeChat?.id === chatId) {
         this.activeChat = this.mostRecentChat
-        
+
         const router = useRouter()
         if (this.activeChat) {
           router.replace({ name: 'chat', params: { chatId: this.activeChat.id } })
@@ -224,4 +228,4 @@ export const useChatStore = defineStore('chat', {
       await storage.saveChats(this.chatList)
     }
   }
-}) 
+})

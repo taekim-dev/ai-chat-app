@@ -25,4 +25,4 @@ export const SYNC_CONFIG = {
 export const CHAT_CONFIG = {
   MAX_CHATS: Number(import.meta.env.VITE_MAX_CHATS) || 5,
   MAX_RETRIES: Number(import.meta.env.VITE_MAX_RETRIES) || 3
-} 
+}

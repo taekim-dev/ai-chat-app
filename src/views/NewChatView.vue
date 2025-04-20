@@ -2,14 +2,14 @@
   <div class="min-h-screen bg-gray-50 py-8 px-4">
     <div class="max-w-4xl mx-auto">
       <h1 class="text-2xl font-bold mb-6 text-center">Choose Your AI Assistant</h1>
-      
+
       <div class="grid gap-6">
         <!-- Celebrity Chat -->
         <div class="flex justify-center mt-4">
           <button
             v-if="celebrityPersona"
-            @click="startChat(celebrityPersona)"
             class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200 text-center max-w-lg w-full transform hover:scale-105 transition-transform"
+            @click="startChat(celebrityPersona)"
           >
             <div class="flex flex-col items-center space-y-4">
               <div class="relative">
@@ -28,8 +28,8 @@
           <button
             v-for="persona in regularPersonas"
             :key="persona.id"
-            @click="startChat(persona)"
             class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 text-left"
+            @click="startChat(persona)"
           >
             <div class="flex items-center space-x-4">
               <span class="text-3xl">{{ persona.icon }}</span>
@@ -69,4 +69,4 @@ async function startChat(persona: Persona) {
   await chatStore.createChat(persona)
   router.push('/chat')
 }
-</script> 
+</script>

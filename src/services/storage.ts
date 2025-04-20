@@ -13,4 +13,4 @@ export const storage = {
   async clearChats(): Promise<void> {
     await db.clearChats()
   }
-} 
+}

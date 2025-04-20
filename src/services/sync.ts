@@ -63,30 +63,32 @@ export class SyncService {
       this.connect()
     }
 
-    this.channel!.onmessage = (event) => {
+    this.channel!.onmessage = event => {
       try {
         if (event.data.event === 'chats-updated') {
           // Convert ISO strings back to Date objects and validate
-          const chats = event.data.data.map((chat: any) => {
-            try {
-              // Convert dates before validation
-              const processedChat = {
-                ...chat,
-                createdAt: new Date(chat.createdAt),
-                updatedAt: new Date(chat.updatedAt),
-                messages: chat.messages.map((msg: any) => ({
-                  ...msg,
-                  createdAt: new Date(msg.createdAt),
-                  updatedAt: new Date(msg.updatedAt)
-                }))
+          const chats = event.data.data
+            .map((chat: any) => {
+              try {
+                // Convert dates before validation
+                const processedChat = {
+                  ...chat,
+                  createdAt: new Date(chat.createdAt),
+                  updatedAt: new Date(chat.updatedAt),
+                  messages: chat.messages.map((msg: any) => ({
+                    ...msg,
+                    createdAt: new Date(msg.createdAt),
+                    updatedAt: new Date(msg.updatedAt)
+                  }))
+                }
+                return validateChat(processedChat)
+              } catch (error) {
+                console.warn('Failed to process chat:', error)
+                return null
               }
-              return validateChat(processedChat)
-            } catch (error) {
-              console.warn('Failed to process chat:', error)
-              return null
-            }
-          }).filter((chat: Chat | null): chat is Chat => chat !== null)
-          
+            })
+            .filter((chat: Chat | null): chat is Chat => chat !== null)
+
           if (chats.length > 0) {
             callback(chats)
           }
@@ -111,4 +113,4 @@ export class SyncService {
   }
 }
 
-export const syncService = new SyncService() 
+export const syncService = new SyncService()

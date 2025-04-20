@@ -21,7 +21,7 @@ export class IndexedDBService {
         resolve()
       }
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME, { keyPath: 'id' })
@@ -39,7 +39,7 @@ export class IndexedDBService {
 
   async saveChats(chats: Chat[]): Promise<void> {
     const db = this.ensureDbConnection()
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite')
       const store = transaction.objectStore(STORE_NAME)
@@ -107,4 +107,4 @@ export class IndexedDBService {
   }
 }
 
-export const db = new IndexedDBService() 
+export const db = new IndexedDBService()

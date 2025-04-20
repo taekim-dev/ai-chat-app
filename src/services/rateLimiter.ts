@@ -9,7 +9,7 @@ interface ChatLimit {
 export interface RateLimitResponse {
   allowed: boolean
   reason?: string
-  cooldownMs?: number  // Return remaining cooldown time for UI handling
+  cooldownMs?: number // Return remaining cooldown time for UI handling
 }
 
 export class RateLimiter {
@@ -58,7 +58,8 @@ export class RateLimiter {
     if (limit.totalMessages >= RATE_LIMIT_CONFIG.MAX_MESSAGES_PER_CHAT) {
       return {
         allowed: false,
-        reason: "You've reached the message limit for this chat. Please start a new chat to continue the conversation."
+        reason:
+          "You've reached the message limit for this chat. Please start a new chat to continue the conversation."
       }
     }
 
@@ -84,4 +85,4 @@ export class RateLimiter {
   }
 }
 
-export const rateLimiter = new RateLimiter() 
+export const rateLimiter = new RateLimiter()

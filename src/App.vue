@@ -17,4 +17,4 @@ onMounted(async () => {
     console.error('Failed to initialize app:', error)
   }
 })
-</script> 
+</script>
