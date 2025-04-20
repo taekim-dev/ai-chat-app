@@ -4,24 +4,6 @@
       <h1 class="text-2xl font-bold mb-8 text-center">Choose Your AI Assistant</h1>
       
       <div class="grid gap-6">
-        <!-- Regular Personas -->
-        <div class="grid gap-4 md:grid-cols-2">
-          <button
-            v-for="persona in regularPersonas"
-            :key="persona.id"
-            @click="startChat(persona)"
-            class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 text-left"
-          >
-            <div class="flex items-center space-x-4">
-              <span class="text-3xl">{{ persona.icon }}</span>
-              <div>
-                <h2 class="text-xl font-semibold">{{ persona.name }}</h2>
-                <p class="text-gray-600 mt-1">{{ persona.description }}</p>
-              </div>
-            </div>
-          </button>
-        </div>
-
         <!-- Celebrity Chat -->
         <div class="flex justify-center mt-4">
           <button
@@ -37,6 +19,23 @@
               <div>
                 <h2 class="text-2xl font-bold mb-2">{{ celebrityPersona.name }}</h2>
                 <p class="text-gray-600">{{ celebrityPersona.description }}</p>
+              </div>
+            </div>
+          </button>
+        </div>
+        <!-- Regular Personas -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <button
+            v-for="persona in regularPersonas"
+            :key="persona.id"
+            @click="startChat(persona)"
+            class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 text-left"
+          >
+            <div class="flex items-center space-x-4">
+              <span class="text-3xl">{{ persona.icon }}</span>
+              <div>
+                <h2 class="text-xl font-semibold">{{ persona.name }}</h2>
+                <p class="text-gray-600 mt-1">{{ persona.description }}</p>
               </div>
             </div>
           </button>
