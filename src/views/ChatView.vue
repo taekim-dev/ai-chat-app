@@ -92,25 +92,25 @@
         <!-- Messages -->
         <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
           <div
-            v-for="message in chatStore.activeChat.messages"
+            v-for="message in chatStore.activeChat?.messages"
             :key="message.id"
             :class="[
-              'max-w-3xl mx-auto p-4 rounded-lg',
-              message.type === 'user'
-                ? 'bg-primary text-white font-medium text-shadow ml-auto'
-                : 'bg-white shadow-sm'
+              'message',
+              message.type === 'user' ? 'message-user' : 'message-agent',
+              message.status === 'error' ? 'message-error' : '',
+              message.status === 'pending' ? 'message-pending' : ''
             ]"
           >
             <div
-              class="leading-relaxed text-base"
-              :class="[message.type === 'user' ? 'text-white' : '']"
+              :class="[
+                'rounded-lg px-4 py-2 max-w-[80%] break-words',
+                message.type === 'user'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700',
+                message.type === 'agent' ? 'typing-animation' : ''
+              ]"
               v-html="formatMessageHtml(message)"
             ></div>
-            <div
-              :class="['text-xs mt-1', message.type === 'user' ? 'text-white/80' : 'text-gray-500']"
-            >
-              {{ formatTime(message.createdAt) }}
-            </div>
           </div>
 
           <!-- Loading Indicator -->
@@ -259,16 +259,18 @@ const scrollToBottom = async () => {
   }
 }
 
-// Watch for new messages and scroll to bottom
-watch(
-  () => chatStore.activeChat?.messages,
-  () => scrollToBottom(),
-  { deep: true }
-)
-
 onMounted(() => {
   scrollToBottom()
 })
+
+// Add watcher for messages
+watch(
+  () => chatStore.activeChat?.messages,
+  () => {
+    scrollToBottom()
+  },
+  { deep: true }
+)
 
 const startCooldown = (cooldownMs: number) => {
   isInputCoolingDown.value = true
@@ -288,6 +290,8 @@ const sendMessage = async () => {
   isSending.value = true
 
   try {
+    // Scroll to bottom after user's message is sent
+    await scrollToBottom()
     await chatStore.sendMessage(message)
     const rateLimit = await rateLimiter.checkRateLimit(chatStore.activeChat!.id)
     if (!rateLimit.allowed && rateLimit.cooldownMs) {
@@ -325,8 +329,8 @@ const formatMessageHtml = (message: any): string => {
     // Convert markdown-style italic text
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
 
-  return `<p>${text
-    .split('\n\n')
+  const paragraphs = text.split('\n\n')
+  return `<p class="${message.type === 'agent' ? 'typing-animation' : ''}">${paragraphs
     .map(paragraph => paragraph.replace(/\n/g, '<br>'))
     .join('</p><p>')}</p>`
 }
@@ -364,5 +368,39 @@ const retryMessage = async () => {
 
 .text-shadow {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.typing-animation {
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out;
+  white-space: pre-wrap;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  animation: fadeInMessage 0.5s ease-out forwards;
+  transform-origin: top;
+  will-change: transform, opacity;
+}
+
+@keyframes fadeInMessage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
