@@ -8,44 +8,7 @@
     ></div>
 
     <!-- Chat List Sidebar -->
-    <div
-      :class="[
-        'fixed md:relative w-64 bg-white border-r flex flex-col z-30 h-full transition-transform duration-300 ease-in-out',
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-      ]"
-    >
-      <!-- Chat History Header -->
-      <div class="h-16 px-4 flex justify-center items-center border-b">
-        <h2 class="text-xl font-semibold">Chat History</h2>
-      </div>
-
-      <!-- Chat List -->
-      <div class="flex-1 overflow-y-auto p-4 flex-shrink-0">
-        <div class="space-y-2">
-          <button
-            v-for="chat in chatStore.sortedChatList"
-            :key="chat.id"
-            :class="[
-              'w-full p-3 text-left rounded-lg transition-colors',
-              chat.id === chatStore.activeChat?.id ? 'bg-primary text-white' : 'hover:bg-gray-100'
-            ]"
-            @click="selectChatAndCloseSidebar(chat.id)"
-          >
-            <div class="flex items-center space-x-2">
-              <span class="text-xl">{{ getPersonaIcon(chat.personaId) }}</span>
-              <span class="font-medium">{{ getPersonaName(chat.personaId) }}</span>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Start New Chat Button (Fixed at bottom) -->
-      <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
-        <router-link to="/new-chat" class="btn btn-primary w-full block text-center">
-          Start New Chat
-        </router-link>
-      </div>
-    </div>
+    <ChatSidebar v-model="isSidebarOpen" />
 
     <!-- Chat Area -->
     <div class="flex-1 flex flex-col w-full overflow-hidden">
@@ -90,99 +53,21 @@
         </div>
 
         <!-- Messages -->
-        <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
-          <div
-            v-for="message in chatStore.activeChat?.messages"
-            :key="message.id"
-            :class="[
-              'message flex',
-              message.type === 'user' ? 'justify-end' : 'justify-start',
-              message.status === 'error' ? 'message-error' : '',
-              message.status === 'pending' ? 'message-pending' : ''
-            ]"
-          >
-            <div
-              :class="[
-                'rounded-2xl px-4 py-3 max-w-[85%] break-words shadow-sm',
-                message.type === 'user'
-                  ? 'bg-blue-500 text-white rounded-tr-none'
-                  : 'bg-white text-gray-900 rounded-tl-none border border-gray-100',
-                message.type === 'agent' ? 'typing-animation' : ''
-              ]"
-              v-html="formatMessageHtml(message)"
-            ></div>
-          </div>
-
-          <!-- Loading Indicator -->
-          <div v-if="isSending" class="max-w-3xl mx-auto p-4 rounded-lg bg-white shadow-sm">
-            <div class="flex items-center space-x-2">
-              <span class="text-2xl">{{ getPersonaIcon(chatStore.activeChat.personaId) }}</span>
-              <div class="flex space-x-1">
-                <div
-                  class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
-                  style="animation-delay: 0s"
-                ></div>
-                <div
-                  class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
-                  style="animation-delay: 0.2s"
-                ></div>
-                <div
-                  class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
-                  style="animation-delay: 0.4s"
-                ></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Global Error Message -->
-          <div
-            v-if="chatStore.errorState"
-            class="max-w-3xl mx-auto p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-center justify-between"
-          >
-            <div class="flex items-center space-x-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <span>{{ chatStore.errorState }}</span>
-            </div>
-            <button
-              v-if="chatStore.lastFailedMessage"
-              class="px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm font-medium transition-colors"
-              @click="retryMessage"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
+        <ChatMessages
+          :messages="chatStore.activeChat.messages"
+          :is-sending="isSending"
+          :error="chatStore.errorState"
+          :can-retry="!!chatStore.lastFailedMessage"
+          :persona-icon="getPersonaIcon(chatStore.activeChat.personaId)"
+          @retry="retryMessage"
+        />
 
         <!-- Message Input -->
-        <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
-          <form class="flex space-x-4 w-full" @submit.prevent="sendMessage">
-            <input
-              v-model="newMessage"
-              type="text"
-              placeholder="Type a message..."
-              class="input flex-1"
-              :disabled="isSending || isInputCoolingDown"
-            />
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="isSending || isInputCoolingDown || !newMessage.trim()"
-            >
-              {{ isInputCoolingDown ? '...' : 'Send' }}
-            </button>
-          </form>
-        </div>
+        <ChatInput
+          :disabled="isSending"
+          :is-input-cooling-down="isInputCoolingDown"
+          @send="sendMessage"
+        />
       </div>
 
       <!-- No Active Chat -->
@@ -194,22 +79,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
-import { format } from 'date-fns'
 import { useRoute, useRouter } from 'vue-router'
 import { rateLimiter } from '@/services/rateLimiter'
+import ChatSidebar from '@/components/chat/ChatSidebar.vue'
+import ChatMessages from '@/components/chat/ChatMessages.vue'
+import ChatInput from '@/components/chat/ChatInput.vue'
 
 const route = useRoute()
 const router = useRouter()
 const chatStore = useChatStore()
 const personaStore = usePersonaStore()
 
-const newMessage = ref('')
 const isSending = ref(false)
 const isSidebarOpen = ref(false)
-const messagesContainer = ref<HTMLElement | null>(null)
 const isInputCoolingDown = ref(false)
 const cooldownTimer = ref<number | null>(null)
 
@@ -242,36 +127,6 @@ const getPersonaName = (personaId: string) => {
   return personaStore.getPersonaById(personaId)?.name || 'Unknown'
 }
 
-const formatTime = (date: Date) => {
-  return format(date, 'h:mm a')
-}
-
-const selectChatAndCloseSidebar = async (chatId: string) => {
-  // Update the route first, using replace to avoid building up history
-  await router.replace({ name: 'chat', params: { chatId } })
-  isSidebarOpen.value = false
-}
-
-const scrollToBottom = async () => {
-  await nextTick()
-  if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-  }
-}
-
-onMounted(() => {
-  scrollToBottom()
-})
-
-// Add watcher for messages
-watch(
-  () => chatStore.activeChat?.messages,
-  () => {
-    scrollToBottom()
-  },
-  { deep: true }
-)
-
 const startCooldown = (cooldownMs: number) => {
   isInputCoolingDown.value = true
   if (cooldownTimer.value) {
@@ -282,16 +137,10 @@ const startCooldown = (cooldownMs: number) => {
   }, cooldownMs)
 }
 
-const sendMessage = async () => {
-  if (!newMessage.value.trim() || isSending.value || isInputCoolingDown.value) return
-
-  const message = newMessage.value
-  newMessage.value = ''
+const sendMessage = async (message: string) => {
   isSending.value = true
 
   try {
-    // Scroll to bottom after user's message is sent
-    await scrollToBottom()
     await chatStore.sendMessage(message)
     const rateLimit = await rateLimiter.checkRateLimit(chatStore.activeChat!.id)
     if (!rateLimit.allowed && rateLimit.cooldownMs) {
@@ -302,37 +151,6 @@ const sendMessage = async () => {
   } finally {
     isSending.value = false
   }
-}
-
-const getMessageText = (message: any): string => {
-  if (message.type === 'user') {
-    return message.content
-  }
-
-  // For agent messages, parse the content if it's a JSON string
-  try {
-    const content =
-      typeof message.content === 'string' ? JSON.parse(message.content) : message.content
-    return content.content || message.content
-  } catch {
-    return message.content
-  }
-}
-
-const formatMessageHtml = (message: any): string => {
-  const text = getMessageText(message)
-    .replace(/&/g, '&amp;') // sanitize HTML
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    // Convert markdown-style bold text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Convert markdown-style italic text
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-
-  const paragraphs = text.split('\n\n')
-  return `<p class="${message.type === 'agent' ? 'typing-animation' : ''}">${paragraphs
-    .map(paragraph => paragraph.replace(/\n/g, '<br>'))
-    .join('</p><p>')}</p>`
 }
 
 const retryMessage = async () => {
