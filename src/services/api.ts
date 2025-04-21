@@ -1,4 +1,3 @@
-import type { Message } from '@/types'
 import { API_CONFIG } from '@/config'
 import { NetworkError } from '@/utils/errors'
 import { validateApiResponse } from '@/utils/validation'
@@ -78,23 +77,5 @@ export async function sendMessage(
     }
 
     throw error
-  }
-}
-
-export async function authenticate(): Promise<void> {
-  const response = await fetchWithTimeout(
-    `${API_CONFIG.BASE_URL}/auth`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    },
-    API_CONFIG.TIMEOUT_MS
-  )
-
-  if (!response.ok) {
-    throw new NetworkError('Authentication failed')
   }
 }

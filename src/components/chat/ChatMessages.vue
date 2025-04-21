@@ -22,16 +22,18 @@
       ></div>
     </div>
 
-    <div v-if="isSending" class="max-w-3xl mx-auto p-4 rounded-lg bg-white shadow-sm">
-      <div class="flex items-center space-x-2">
-        <span class="text-2xl">{{ personaIcon }}</span>
-        <div class="flex space-x-1">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
-            :style="{ 'animation-delay': `${(i - 1) * 0.2}s` }"
-          ></div>
+    <div v-if="isSending" class="flex justify-start">
+      <div class="rounded-2xl px-4 py-3 bg-white text-gray-900 border border-gray-100 rounded-tl-none shadow-sm">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">{{ personaIcon }}</span>
+          <div class="flex space-x-1">
+            <div
+              v-for="i in 3"
+              :key="i"
+              class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
+              :style="{ 'animation-delay': `${(i - 1) * 0.2}s` }"
+            ></div>
+          </div>
         </div>
       </div>
     </div>
