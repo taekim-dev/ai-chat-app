@@ -1,83 +1,77 @@
-# AI Chat Application
+# AI Chat App
 
-A Vue 3 + TypeScript chat application featuring multiple AI personas and real-time sync across tabs.
+A modern chat application built with Vue 3 and TypeScript that enables conversations with AI personas. Features a clean, responsive UI and robust backend integration.
 
 ## Features
 
-- Multiple AI personas (Therapist, Tutor, Chef, Trainer)
-- Celebrity guessing game mode
-- Real-time sync across browser tabs
-- Offline support with IndexedDB
-- Rate limiting and error handling
-- TypeScript support
+### Chat Interface
+- 💬 Real-time chat with multiple AI personas
+- 🔄 Smooth message animations and transitions
+- 📱 Fully responsive design for mobile and desktop
+- 🎭 Multiple persona support (Celebrity, Therapist, Language Tutor, etc.)
 
-## Project Structure
+### Technical Features
+- 🔒 Rate limiting to prevent message flooding
+- 🔄 Message synchronization across tabs using BroadcastChannel
+- ⚠️ Comprehensive error handling and retry mechanism
+- 🎯 Type-safe implementation with TypeScript
+- 🏗️ Component-based architecture for maintainability
 
+### Security & Performance
+- 🔑 API key authentication for backend requests
+- 🚦 CORS protection for API endpoints
+- ⚡ Optimized message rendering and animations
+- 🛡️ Input sanitization and validation
+
+## Tech Stack
+
+- Vue 3 with Composition API
+- TypeScript
+- Tailwind CSS
+- Vite
+- Pinia for state management
+- Vitest for unit testing
+
+## Getting Started
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/ai-chat-app.git
+cd ai-chat-app
 ```
-src/
-├── assets/      # Static assets
-├── components/  # Vue components
-├── composables/ # Vue composables
-├── config/      # App configuration
-├── router/      # Vue Router setup
-├── services/    # Core services
-├── stores/      # Pinia stores
-├── styles/      # Global styles
-├── types/       # TypeScript types
-├── utils/       # Utilities
-└── views/       # Vue views
-```
 
-## Setup
-
-1. Install dependencies:
+2. Install dependencies
 ```bash
 npm install
 ```
 
-2. Add environment variables:
+3. Set up environment variables
 ```bash
 cp .env.example .env
+# Add your API key to .env
 ```
 
-3. Run development server:
+4. Start development server
 ```bash
 npm run dev
 ```
 
-## Key Technologies
-
-- Vue 3
-- TypeScript
-- Pinia
-- Vue Router
-- IndexedDB
-- Tailwind CSS
-- Zod
-
-## Development
-
-- Use `npm run lint` to check code style
-- Use `npm run test` to run tests
-- Use `npm run build` to create production build
-
 ## Architecture
 
-- Uses Pinia for state management
-- Implements service layer pattern
-- Follows composition API patterns
-- Includes error boundary handling
-- Features real-time sync via BroadcastChannel API
+The application follows a modular architecture:
+- `components/chat/` - Reusable chat components
+- `stores/` - Pinia stores for state management
+- `services/` - API, rate limiting, and sync services
+- `types/` - TypeScript type definitions
 
-## Documentation
+## Development Considerations
 
-- [Product Specification](https://docs.google.com/document/d/1MOKA2w-WOVfi3vF1Wz0JkO5jviHYwb-70OiWReTA0j4/edit?usp=sharing)
-- [System Design](https://docs.google.com/document/d/12gZt0aRicgOZG0L7zlEik6H5yyBAnWfAf3Fx870aHuk/edit?usp=sharing)
+- Rate limiting: Implements cooldown periods between messages
+- Error handling: Graceful error recovery with retry options
+- Cross-tab sync: Uses BroadcastChannel API for chat synchronization
+- Mobile-first: Responsive design with mobile navigation
+- Testing: Unit tests for critical functionality
 
-## Key Features
+## License
 
-- One-on-one chat with AI personas
-- Persistent chat history
-- Cross-tab synchronization
-- Responsive design
-- Error handling and retry mechanism 
+MIT 
