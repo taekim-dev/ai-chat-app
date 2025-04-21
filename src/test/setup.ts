@@ -15,7 +15,6 @@ class MockBroadcastChannel {
 // Add BroadcastChannel to global
 global.BroadcastChannel = MockBroadcastChannel as any
 
-// Reset all mocks before each test
 beforeEach(() => {
   vi.clearAllMocks()
 })
