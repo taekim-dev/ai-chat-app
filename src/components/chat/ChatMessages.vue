@@ -59,7 +59,7 @@
       </div>
       <button
         v-if="canRetry"
-        class="px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm font-medium transition-colors"
+        class="px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm font-medium transition-colors retry-button"
         @click="$emit('retry')"
       >
         Retry
@@ -167,6 +167,21 @@ const formatMessageHtml = (message: Message): string => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.retry-button {
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #DC3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  /* Add focus styles */
+  &:focus {
+    outline: 2px solid #007AFF;
+    outline-offset: 2px;
   }
 }
 </style> 
