@@ -2,26 +2,30 @@
 
 A modern chat application built with Vue 3 and TypeScript that enables conversations with AI personas. Features a clean, responsive UI and robust backend integration.
 
+## Design Documents
+- [Product Specification](https://docs.google.com/document/d/1MOKA2w-WOVfi3vF1Wz0JkO5jviHYwb-70OiWReTA0j4/edit?usp=drive_link)
+- [System Design](https://docs.google.com/document/d/12gZt0aRicgOZG0L7zlEik6H5yyBAnWfAf3Fx870aHuk/edit?usp=drive_link)
+
 ## Features
 
 ### Chat Interface
-- 💬 Real-time chat with multiple AI personas
-- 🔄 Smooth message animations and transitions
-- 📱 Fully responsive design for mobile and desktop
-- 🎭 Multiple persona support (Celebrity, Therapist, Language Tutor, etc.)
+- 💬 Real-time chat with AI personas
+- 🔄 Message animations and transitions
+- 📱 Responsive design for all devices
+- 🎭 Multiple personas (Celebrity, Therapist, Language Tutor, etc.)
 
 ### Technical Features
-- 🔒 Rate limiting to prevent message flooding
-- 🔄 Message synchronization across tabs using BroadcastChannel
-- ⚠️ Comprehensive error handling and retry mechanism
-- 🎯 Type-safe implementation with TypeScript
-- 🏗️ Component-based architecture for maintainability
+- 🔒 Rate limiting for message control
+- 🔄 Cross-tab message sync using BroadcastChannel
+- ⚠️ Error handling with retry options
+- 🎯 Type-safe implementation
+- 🏗️ Component-based architecture
 
 ### Security & Performance
-- 🔑 API key authentication for backend requests
-- 🚦 CORS protection for API endpoints
-- ⚡ Optimized message rendering and animations
-- 🛡️ Input sanitization and validation
+- 🔑 API key authentication
+- 🚦 CORS protection
+- ⚡ Optimized message handling
+- 🛡️ Input validation
 
 ## Tech Stack
 
@@ -59,18 +63,10 @@ npm run dev
 ## Architecture
 
 The application follows a modular architecture:
-- `components/chat/` - Reusable chat components
+- `components/chat/` - Chat UI components
 - `stores/` - Pinia stores for state management
-- `services/` - API, rate limiting, and sync services
-- `types/` - TypeScript type definitions
-
-## Development Considerations
-
-- Rate limiting: Implements cooldown periods between messages
-- Error handling: Graceful error recovery with retry options
-- Cross-tab sync: Uses BroadcastChannel API for chat synchronization
-- Mobile-first: Responsive design with mobile navigation
-- Testing: Unit tests for critical functionality
+- `services/` - API and utility services
+- `types/` - TypeScript definitions
 
 ## License
 
