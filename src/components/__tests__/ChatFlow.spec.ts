@@ -4,11 +4,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import ChatView from '@/views/ChatView.vue'
 import { useChatStore } from '@/stores/chat'
-import { usePersonaStore } from '@/stores/persona'
 import { rateLimiter } from '@/services/rateLimiter'
-import { db } from '@/services/db'
-import { storage } from '@/services/storage'
-import * as api from '@/services/api'
 
 // Mock fetch for API calls
 global.fetch = vi.fn()

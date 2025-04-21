@@ -8,13 +8,14 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "vitest",
+    "test:unit": "vitest run",
     "test:e2e": "cypress run",
     "test:e2e:dev": "cypress open",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "typecheck": "vue-tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm run test:unit"
+    "validate": "npm run lint && npm run typecheck && npm run test:unit",
+    "prepare": "husky"
   },
   "dependencies": {
     "date-fns": "^2.30.0",
@@ -45,6 +46,7 @@
     "eslint-plugin-cypress": "^2.14.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-vue": "^9.33.0",
+    "husky": "^9.1.7",
     "jsdom": "^22.1.0",
     "postcss": "^8.4.28",
     "prettier": "^3.5.3",

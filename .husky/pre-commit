@@ -1,0 +1,1 @@
+echo "Running unit tests before commit..." && npm run test:unit || { echo "Tests failed. Please fix the tests before committing."; exit 1; }
