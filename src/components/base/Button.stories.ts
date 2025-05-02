@@ -2,21 +2,35 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 import Button from './Button.vue'
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
-const meta: Meta<typeof Button> = {
+const meta = {
   title: 'Base/Button',
   component: Button,
   tags: ['autodocs'],
   argTypes: {
     variant: {
+      description: 'The visual style of the button',
       control: 'select',
       options: ['primary', 'secondary', 'outline', 'ghost', 'neutral', 'success', 'error', 'info']
     },
     size: {
+      description: 'The size of the button',
       control: 'select',
       options: ['sm', 'md', 'lg']
+    },
+    loading: {
+      description: 'Whether the button is in a loading state',
+      control: 'boolean'
+    },
+    disabled: {
+      description: 'Whether the button is disabled',
+      control: 'boolean'
+    },
+    fullWidth: {
+      description: 'Whether the button should take up the full width of its container',
+      control: 'boolean'
     }
   }
-}
+} as Meta<typeof Button>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -24,7 +38,7 @@ type Story = StoryObj<typeof meta>
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary: Story = {
   args: {
-    variant: 'primary',
+    variant: 'primary'
   },
   render: (args) => ({
     components: { Button },
@@ -37,7 +51,7 @@ export const Primary: Story = {
 
 export const Secondary: Story = {
   args: {
-    variant: 'secondary',
+    variant: 'secondary'
   },
   render: (args) => ({
     components: { Button },
@@ -50,7 +64,7 @@ export const Secondary: Story = {
 
 export const Success: Story = {
   args: {
-    variant: 'success',
+    variant: 'success'
   },
   render: (args) => ({
     components: { Button },
@@ -63,7 +77,7 @@ export const Success: Story = {
 
 export const Error: Story = {
   args: {
-    variant: 'error',
+    variant: 'error'
   },
   render: (args) => ({
     components: { Button },
@@ -76,7 +90,7 @@ export const Error: Story = {
 
 export const Info: Story = {
   args: {
-    variant: 'info',
+    variant: 'info'
   },
   render: (args) => ({
     components: { Button },
@@ -89,7 +103,7 @@ export const Info: Story = {
 
 export const Small: Story = {
   args: {
-    size: 'sm',
+    size: 'sm'
   },
   render: (args) => ({
     components: { Button },
@@ -102,7 +116,7 @@ export const Small: Story = {
 
 export const Medium: Story = {
   args: {
-    size: 'md',
+    size: 'md'
   },
   render: (args) => ({
     components: { Button },
@@ -115,7 +129,7 @@ export const Medium: Story = {
 
 export const Large: Story = {
   args: {
-    size: 'lg',
+    size: 'lg'
   },
   render: (args) => ({
     components: { Button },
