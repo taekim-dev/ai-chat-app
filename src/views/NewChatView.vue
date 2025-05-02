@@ -1,14 +1,15 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8 px-4">
+  <div class="min-h-screen bg-surface-50 py-8 px-4">
     <div class="max-w-4xl mx-auto">
-      <h1 class="text-2xl font-bold mb-4 text-center">Choose Your AI Assistant</h1>
+      <h1 class="text-2xl font-bold mb-4 text-center text-content-400">Choose Your AI Assistant</h1>
 
       <div class="grid gap-6">
         <!-- Celebrity Chat -->
         <div class="flex justify-center mt-4">
-          <button
+          <Button
             v-if="celebrityPersona"
-            class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200 text-center max-w-lg w-full transform hover:scale-105 transition-transform"
+            variant="ghost"
+            class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl max-w-lg w-full transform hover:scale-105 transition-all duration-200"
             @click="startChat(celebrityPersona)"
           >
             <div class="flex flex-col items-center space-y-4">
@@ -17,28 +18,29 @@
                 <span class="absolute -right-3 -bottom-1 text-3xl">❓</span>
               </div>
               <div>
-                <h2 class="text-2xl font-bold mb-2">{{ celebrityPersona.name }}</h2>
-                <p class="text-gray-600">{{ celebrityPersona.description }}</p>
+                <h2 class="text-2xl font-bold mb-2 text-content-400">{{ celebrityPersona.name }}</h2>
+                <p class="text-content-300">{{ celebrityPersona.description }}</p>
               </div>
             </div>
-          </button>
+          </Button>
         </div>
         <!-- Regular Personas -->
         <div class="grid gap-4 md:grid-cols-2">
-          <button
+          <Button
             v-for="persona in regularPersonas"
             :key="persona.id"
-            class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 text-left"
+            variant="ghost"
+            class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 text-left"
             @click="startChat(persona)"
           >
             <div class="flex items-center space-x-4">
               <span class="text-3xl">{{ persona.icon }}</span>
               <div>
-                <h2 class="text-xl font-semibold">{{ persona.name }}</h2>
-                <p class="text-gray-600 mt-1">{{ persona.description }}</p>
+                <h2 class="text-xl font-semibold text-content-400">{{ persona.name }}</h2>
+                <p class="text-content-300 mt-1">{{ persona.description }}</p>
               </div>
             </div>
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -51,6 +53,7 @@ import { useRouter } from 'vue-router'
 import { usePersonaStore } from '@/stores/persona'
 import { useChatStore } from '@/stores/chat'
 import type { Persona } from '@/types'
+import Button from '@/components/base/Button.vue'
 
 const router = useRouter()
 const personaStore = usePersonaStore()
