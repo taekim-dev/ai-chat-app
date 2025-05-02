@@ -1,0 +1,57 @@
+import { Meta, Story, Controls } from '@storybook/blocks'
+import * as InputStories from './Input.stories'
+
+<Meta of={InputStories} />
+
+# Input Component
+
+The Input component is a form control that allows users to enter text, numbers, or other data.
+
+## Features
+
+- Multiple input types (text, password, email, number)
+- Different sizes (sm, md, lg)
+- Label support
+- Error state
+- Disabled state
+- Required state
+- Full width option
+- Placeholder support
+
+## Usage
+
+```vue
+<template>
+  <Input
+    v-model="value"
+    label="Username"
+    placeholder="Enter your username"
+  />
+</template>
+```
+
+## Types
+
+<Story of={InputStories.Default} />
+<Story of={InputStories.Password} />
+<Story of={InputStories.Email} />
+<Story of={InputStories.Number} />
+
+## States
+
+<Story of={InputStories.WithError} />
+<Story of={InputStories.Disabled} />
+<Story of={InputStories.Required} />
+
+## Sizes
+
+<Story of={InputStories.Small} />
+<Story of={InputStories.Large} />
+
+## Layout
+
+<Story of={InputStories.FullWidth} />
+
+## Props
+
+<Controls /> 
