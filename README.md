@@ -35,6 +35,7 @@ A modern chat application built with Vue 3 and TypeScript that enables conversat
 - Vite
 - Pinia for state management
 - Vitest for unit testing
+- Playwright for E2E testing
 
 ## Getting Started
 
@@ -60,6 +61,29 @@ cp .env.example .env
 npm run dev
 ```
 
+## Development
+
+### Testing
+The project uses two types of tests:
+
+#### Unit Tests
+```bash
+npm run test        # Run unit tests
+npm run test:unit   # Same as above
+```
+
+#### E2E Tests with Playwright
+```bash
+npm run test:e2e    # Run E2E tests headlessly
+npm run test:e2e:ui # Run E2E tests with UI for debugging
+```
+
+### Component Development
+We use Storybook for component development and documentation:
+```bash
+npm run storybook   # Start Storybook development server
+```
+
 ## Architecture
 
 The application follows a modular architecture:
@@ -67,6 +91,7 @@ The application follows a modular architecture:
 - `stores/` - Pinia stores for state management
 - `services/` - API and utility services
 - `types/` - TypeScript definitions
+- `e2e/` - Playwright E2E tests
 
 ## License
 
