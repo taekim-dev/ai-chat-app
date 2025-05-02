@@ -3,7 +3,7 @@
     :class="[
       // Base styles
       'inline-flex items-center justify-center',
-      'transition-colors duration-200',
+      'transition-colors duration-200 ease-in-out',
       'focus:outline-none focus:ring-2 focus:ring-offset-2',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       
@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 interface Props {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'neutral'
   size?: 'sm' | 'md' | 'lg'
   icon?: string
   loading?: boolean
@@ -87,6 +87,7 @@ const variantClasses = {
   primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500',
   secondary: 'bg-surface-200 text-content-300 hover:bg-surface-300 focus:ring-surface-400',
   outline: 'border-2 border-primary-500 text-primary-500 hover:bg-primary-50 focus:ring-primary-500',
-  ghost: 'text-primary-500 hover:bg-primary-50 focus:ring-primary-500'
+  ghost: 'text-primary-500 hover:bg-primary-50 focus:ring-primary-500',
+  neutral: 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-neutral-400'
 }
 </script> 
