@@ -101,10 +101,15 @@ const cooldownTimer = ref<number | null>(null)
 // Initialize chat from route parameter
 onMounted(async () => {
   const chatId = route.params.chatId as string | null
-  const hasChat = chatStore.initializeWithChat(chatId)
-
-  // If no chat was found/set, redirect to new chat
-  if (!hasChat) {
+  
+  // Only initialize if we have a chat ID
+  if (chatId) {
+    await chatStore.initializeWithChat(chatId)
+    const chat = chatStore.chatList.find(c => c.id === chatId)
+    if (!chat) {
+      router.replace({ name: 'new-chat' })
+    }
+  } else {
     router.replace({ name: 'new-chat' })
   }
 })
@@ -112,9 +117,17 @@ onMounted(async () => {
 // Watch for route changes to update active chat
 watch(
   () => route.params.chatId,
-  newChatId => {
-    if (newChatId && newChatId !== chatStore.activeChat?.id) {
+  async (newChatId) => {
+    if (!newChatId) {
+      router.replace({ name: 'new-chat' })
+      return
+    }
+
+    const chat = chatStore.chatList.find(c => c.id === newChatId)
+    if (chat) {
       chatStore.setActiveChat(newChatId as string)
+    } else {
+      router.replace({ name: 'new-chat' })
     }
   }
 )

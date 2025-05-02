@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePersonaStore } from '@/stores/persona'
 import { useChatStore } from '@/stores/chat'
@@ -58,6 +58,7 @@ import Button from '@/components/base/Button.vue'
 const router = useRouter()
 const personaStore = usePersonaStore()
 const chatStore = useChatStore()
+const isCreating = ref(false)
 
 // Separate regular personas from celebrity chat
 const regularPersonas = computed(() => {
@@ -69,7 +70,14 @@ const celebrityPersona = computed(() => {
 })
 
 async function startChat(persona: Persona) {
-  await chatStore.createChat(persona)
-  router.push('/chat')
+  if (isCreating.value) return
+  
+  try {
+    isCreating.value = true
+    const newChat = await chatStore.createChat(persona)
+    await router.push(`/chat/${newChat.id}`)
+  } finally {
+    isCreating.value = false
+  }
 }
 </script>

@@ -198,6 +198,15 @@ describe('ChatView Critical Paths', () => {
   })
 
   it('should handle mobile sidebar toggle', async () => {
+    const chatStore = useChatStore()
+    // Create a test chat first
+    const testChat = await chatStore.createChat({
+      id: 'therapist',
+      name: 'Therapist',
+      icon: '👨‍⚕️',
+      description: 'A supportive listener who helps you explore thoughts and feelings'
+    })
+
     const wrapper = mount(ChatView, {
       global: {
         plugins: [router],
@@ -209,7 +218,8 @@ describe('ChatView Critical Paths', () => {
       }
     })
 
-    // Wait for component to mount
+    // Set up active chat
+    await router.push({ name: 'chat', params: { chatId: testChat.id } })
     await wrapper.vm.$nextTick()
 
     // Find and click hamburger button
