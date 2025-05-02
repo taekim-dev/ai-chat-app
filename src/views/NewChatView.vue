@@ -30,7 +30,7 @@
             v-for="persona in regularPersonas"
             :key="persona.id"
             variant="ghost"
-            class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 text-left"
+            class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-left"
             @click="startChat(persona)"
           >
             <div class="flex items-center space-x-4">
