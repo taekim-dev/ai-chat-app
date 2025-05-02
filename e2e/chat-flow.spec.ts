@@ -16,8 +16,9 @@ test.describe('Critical Chat Flow', () => {
     // Select Therapist and verify initial message
     await page.getByText('Therapist').click()
     
-    // Wait for initial greeting to appear
-    const therapistGreeting = page.getByText('You are talking with a professional therapist. Feel free to share your thoughts and feelings in a safe, confidential space.')
+    // Wait for chat container and first message to be visible
+    await page.waitForSelector('div.message')
+    const therapistGreeting = page.locator('div.message div').filter({ hasText: 'professional therapist' }).first()
     await expect(therapistGreeting).toBeVisible()
 
     // Send a message and get response
@@ -36,11 +37,15 @@ test.describe('Critical Chat Flow', () => {
     // Return to the same chat by clicking the chat item
     await page.getByText('Therapist').first().click()
     
-    // Wait for chat view to load
-    await page.waitForTimeout(1500)
+    // Wait for URL to update
+    await page.waitForURL('**/chat/*')
+    
+    // Wait for chat container and messages to load
+    await page.waitForSelector('div.message', { timeout: 5000 })
     
     // Verify we're back in the same chat by checking for greeting
-    await expect(therapistGreeting).toBeVisible()
+    const greetingAfterReturn = page.locator('div.message div').filter({ hasText: 'professional therapist' }).first()
+    await expect(greetingAfterReturn).toBeVisible()
     
     // Verify we can still interact
     await page.getByPlaceholder('Type a message...').fill('How are you?')

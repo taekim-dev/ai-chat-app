@@ -77,7 +77,7 @@ const getPersonaName = (personaId: string) => {
 
 const openChat = (chatId: string) => {
   chatStore.setActiveChat(chatId)
-  router.push('/chat')
+  router.push(`/chat/${chatId}`)
 }
 
 const showDeleteConfirm = (chatId: string) => {
