@@ -82,10 +82,14 @@ const labelClasses = computed(() => [
       :required="required"
       :placeholder="placeholder"
       :class="inputClasses"
+      :aria-disabled="disabled"
+      :aria-required="required"
+      :aria-invalid="!!error"
+      :aria-describedby="error ? `${label}-error` : undefined"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
     
-    <p v-if="error" class="mt-1 text-sm text-error-700">
+    <p v-if="error" :id="`${label}-error`" class="mt-1 text-sm text-error-700">
       {{ error }}
     </p>
   </div>

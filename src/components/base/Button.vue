@@ -19,6 +19,8 @@
       className
     ]"
     :disabled="disabled || loading"
+    :aria-disabled="disabled || loading"
+    :aria-busy="loading"
     v-bind="$attrs"
     @click="$emit('click', $event)"
   >

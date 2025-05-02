@@ -24,6 +24,26 @@ describe('Text Component', () => {
       expect(wrapper.classes()).toContain('leading-tight')
     })
 
+    it('uses correct h3 tokens', () => {
+      const wrapper = mount(Text, {
+        props: { variant: 'h3' },
+        slots: { default: 'Heading 3' }
+      })
+      expect(wrapper.classes()).toContain('text-lg')
+      expect(wrapper.classes()).toContain('font-medium')
+      expect(wrapper.classes()).toContain('leading-snug')
+    })
+
+    it('uses correct h4 tokens', () => {
+      const wrapper = mount(Text, {
+        props: { variant: 'h4' },
+        slots: { default: 'Heading 4' }
+      })
+      expect(wrapper.classes()).toContain('text-base')
+      expect(wrapper.classes()).toContain('font-medium')
+      expect(wrapper.classes()).toContain('leading-snug')
+    })
+
     it('uses correct body tokens', () => {
       const wrapper = mount(Text, {
         props: { variant: 'body' },
@@ -61,6 +81,14 @@ describe('Text Component', () => {
       expect(wrapper.classes()).toContain('font-medium')
     })
 
+    it('uses correct semibold weight token', () => {
+      const wrapper = mount(Text, {
+        props: { weight: 'semibold' },
+        slots: { default: 'Text' }
+      })
+      expect(wrapper.classes()).toContain('font-semibold')
+    })
+
     it('uses correct bold weight token', () => {
       const wrapper = mount(Text, {
         props: { weight: 'bold' },
@@ -80,12 +108,28 @@ describe('Text Component', () => {
       expect(wrapper.classes()).toContain('text-content-400')
     })
 
+    it('uses correct muted color token', () => {
+      const wrapper = mount(Text, {
+        props: { color: 'muted' },
+        slots: { default: 'Text' }
+      })
+      expect(wrapper.classes()).toContain('text-content-100')
+    })
+
     it('uses correct primary color token', () => {
       const wrapper = mount(Text, {
         props: { color: 'primary' },
         slots: { default: 'Text' }
       })
       expect(wrapper.classes()).toContain('text-primary-600')
+    })
+
+    it('uses correct success color token', () => {
+      const wrapper = mount(Text, {
+        props: { color: 'success' },
+        slots: { default: 'Text' }
+      })
+      expect(wrapper.classes()).toContain('text-success-700')
     })
 
     it('uses correct error color token', () => {
@@ -154,6 +198,30 @@ describe('Text Component', () => {
         slots: { default: 'Heading 1' }
       })
       expect(wrapper.element.tagName.toLowerCase()).toBe('h1')
+    })
+
+    it('renders as h2 for h2 variant', () => {
+      const wrapper = mount(Text, {
+        props: { variant: 'h2' },
+        slots: { default: 'Heading 2' }
+      })
+      expect(wrapper.element.tagName.toLowerCase()).toBe('h2')
+    })
+
+    it('renders as h3 for h3 variant', () => {
+      const wrapper = mount(Text, {
+        props: { variant: 'h3' },
+        slots: { default: 'Heading 3' }
+      })
+      expect(wrapper.element.tagName.toLowerCase()).toBe('h3')
+    })
+
+    it('renders as h4 for h4 variant', () => {
+      const wrapper = mount(Text, {
+        props: { variant: 'h4' },
+        slots: { default: 'Heading 4' }
+      })
+      expect(wrapper.element.tagName.toLowerCase()).toBe('h4')
     })
 
     it('renders as p for body variant', () => {

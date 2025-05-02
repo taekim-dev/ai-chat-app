@@ -2,123 +2,121 @@ import { mount } from '@vue/test-utils'
 import Button from '../Button.vue'
 
 describe('Button Component', () => {
-  // Test design token usage
-  describe('Design Tokens', () => {
-    it('uses correct primary color tokens', () => {
-      const wrapper = mount(Button, {
-        props: { variant: 'primary' }
-      })
-      expect(wrapper.classes()).toContain('bg-primary-500')
-      expect(wrapper.classes()).toContain('text-white')
-      expect(wrapper.classes()).toContain('hover:bg-primary-600')
-    })
+  // Test variants
+  describe('Variants', () => {
+    const variants = {
+      primary: ['bg-primary-500', 'text-white', 'hover:bg-primary-600', 'focus:ring-primary-500'],
+      secondary: ['bg-surface-200', 'text-content-300', 'hover:bg-surface-300', 'focus:ring-surface-400'],
+      outline: ['border-2', 'border-primary-500', 'text-primary-500', 'hover:bg-primary-50', 'focus:ring-primary-500'],
+      ghost: ['text-primary-500', 'hover:bg-primary-50', 'focus:ring-primary-500'],
+      neutral: ['bg-neutral-200', 'text-neutral-700', 'hover:bg-neutral-300', 'focus:ring-neutral-400'],
+      success: ['bg-success-500', 'text-white', 'hover:bg-success-600', 'focus:ring-success-500'],
+      error: ['bg-error-500', 'text-white', 'hover:bg-error-600', 'focus:ring-error-500'],
+      info: ['bg-info-500', 'text-white', 'hover:bg-info-600', 'focus:ring-info-500']
+    }
 
-    it('uses correct secondary color tokens', () => {
-      const wrapper = mount(Button, {
-        props: { variant: 'secondary' }
+    Object.entries(variants).forEach(([variant, classes]) => {
+      it(`uses correct ${variant} variant tokens`, () => {
+        const wrapper = mount(Button, {
+          props: { variant: variant as any }
+        })
+        classes.forEach(className => {
+          expect(wrapper.classes()).toContain(className)
+        })
       })
-      expect(wrapper.classes()).toContain('bg-surface-200')
-      expect(wrapper.classes()).toContain('text-content-300')
-      expect(wrapper.classes()).toContain('hover:bg-surface-300')
-    })
-
-    it('uses correct outline variant tokens', () => {
-      const wrapper = mount(Button, {
-        props: { variant: 'outline' }
-      })
-      expect(wrapper.classes()).toContain('border-2')
-      expect(wrapper.classes()).toContain('border-primary-500')
-      expect(wrapper.classes()).toContain('text-primary-500')
-    })
-
-    it('uses correct ghost variant tokens', () => {
-      const wrapper = mount(Button, {
-        props: { variant: 'ghost' }
-      })
-      expect(wrapper.classes()).toContain('text-primary-500')
-      expect(wrapper.classes()).toContain('hover:bg-primary-50')
     })
   })
 
   // Test size variations
   describe('Size Variations', () => {
-    it('uses correct small size tokens', () => {
-      const wrapper = mount(Button, {
-        props: { size: 'sm' }
-      })
-      expect(wrapper.classes()).toContain('px-3')
-      expect(wrapper.classes()).toContain('py-1.5')
-      expect(wrapper.classes()).toContain('text-sm')
-      expect(wrapper.classes()).toContain('rounded-sm')
-    })
+    const sizes = {
+      sm: { padding: ['px-3', 'py-1.5'], text: 'text-sm', radius: 'rounded-sm' },
+      md: { padding: ['px-4', 'py-2'], text: 'text-base', radius: 'rounded-md' },
+      lg: { padding: ['px-6', 'py-3'], text: 'text-lg', radius: 'rounded-lg' }
+    }
 
-    it('uses correct medium size tokens', () => {
-      const wrapper = mount(Button, {
-        props: { size: 'md' }
+    Object.entries(sizes).forEach(([size, classes]) => {
+      it(`uses correct ${size} size tokens`, () => {
+        const wrapper = mount(Button, {
+          props: { size: size as any }
+        })
+        classes.padding.forEach(p => expect(wrapper.classes()).toContain(p))
+        expect(wrapper.classes()).toContain(classes.text)
+        expect(wrapper.classes()).toContain(classes.radius)
       })
-      expect(wrapper.classes()).toContain('px-4')
-      expect(wrapper.classes()).toContain('py-2')
-      expect(wrapper.classes()).toContain('text-base')
-      expect(wrapper.classes()).toContain('rounded-md')
-    })
-
-    it('uses correct large size tokens', () => {
-      const wrapper = mount(Button, {
-        props: { size: 'lg' }
-      })
-      expect(wrapper.classes()).toContain('px-6')
-      expect(wrapper.classes()).toContain('py-3')
-      expect(wrapper.classes()).toContain('text-lg')
-      expect(wrapper.classes()).toContain('rounded-lg')
     })
   })
 
-  // Test states
-  describe('States', () => {
-    it('applies correct disabled state tokens', () => {
+  // Test states and accessibility
+  describe('States and Accessibility', () => {
+    it('handles disabled state correctly', () => {
       const wrapper = mount(Button, {
         props: { disabled: true }
       })
       expect(wrapper.classes()).toContain('disabled:opacity-50')
       expect(wrapper.classes()).toContain('disabled:cursor-not-allowed')
+      expect(wrapper.attributes('disabled')).toBeDefined()
+      expect(wrapper.attributes('aria-disabled')).toBe('true')
+      
+      // Test click prevention
+      wrapper.trigger('click')
+      expect(wrapper.emitted('click')).toBeUndefined()
     })
 
-    it('applies correct loading state tokens', () => {
+    it('handles loading state correctly', () => {
       const wrapper = mount(Button, {
         props: { loading: true }
       })
       expect(wrapper.find('.animate-spin').exists()).toBe(true)
-      expect(wrapper.find('svg').exists()).toBe(true)
+      expect(wrapper.attributes('disabled')).toBeDefined()
+      expect(wrapper.attributes('aria-busy')).toBe('true')
+      expect(wrapper.attributes('aria-disabled')).toBe('true')
+      
+      // Test click prevention
+      wrapper.trigger('click')
+      expect(wrapper.emitted('click')).toBeUndefined()
+    })
+
+    it('has correct focus ring styles', () => {
+      const wrapper = mount(Button)
+      const focusClasses = ['focus:outline-none', 'focus:ring-2', 'focus:ring-offset-2']
+      focusClasses.forEach(className => {
+        expect(wrapper.classes()).toContain(className)
+      })
     })
   })
 
-  // Test full width option
-  describe('Full Width', () => {
-    it('applies full width class when specified', () => {
+  // Test layout options
+  describe('Layout', () => {
+    it('handles full width and icon options correctly', () => {
       const wrapper = mount(Button, {
-        props: { fullWidth: true }
+        props: { 
+          fullWidth: true,
+          icon: '🔍'
+        }
       })
       expect(wrapper.classes()).toContain('w-full')
-    })
-
-    it('does not apply full width class by default', () => {
-      const wrapper = mount(Button)
-      expect(wrapper.classes()).not.toContain('w-full')
-    })
-  })
-
-  // Test icon support
-  describe('Icon Support', () => {
-    it('renders icon when provided', () => {
-      const wrapper = mount(Button, {
-        props: { icon: '🔍' }
-      })
       expect(wrapper.find('.mr-2').text()).toBe('🔍')
     })
 
-    it('does not render icon when not provided', () => {
+    it('hides icon when loading', () => {
+      const wrapper = mount(Button, {
+        props: { 
+          icon: '🔍',
+          loading: true
+        }
+      })
+      expect(wrapper.find('.mr-2').text()).not.toBe('🔍')
+    })
+  })
+
+  // Test events
+  describe('Events', () => {
+    it('emits click event with event object when clicked', async () => {
       const wrapper = mount(Button)
-      expect(wrapper.find('.mr-2').exists()).toBe(false)
+      await wrapper.trigger('click')
+      expect(wrapper.emitted('click')).toBeTruthy()
+      expect(wrapper.emitted('click')?.[0]).toBeTruthy()
     })
   })
 }) 

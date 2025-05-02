@@ -2,6 +2,16 @@ import { mount } from '@vue/test-utils'
 import Card from '../Card.vue'
 
 describe('Card Component', () => {
+  // Test base classes
+  describe('Base Classes', () => {
+    it('applies base overflow class', () => {
+      const wrapper = mount(Card, {
+        slots: { default: 'Content' }
+      })
+      expect(wrapper.classes()).toContain('overflow-hidden')
+    })
+  })
+
   // Test variants
   describe('Variants', () => {
     it('uses correct elevated variant tokens', () => {
@@ -127,12 +137,42 @@ describe('Card Component', () => {
       expect(wrapper.classes()).toContain('transition-transform')
     })
 
+    it('applies both hover and click effects when both are enabled', () => {
+      const wrapper = mount(Card, {
+        props: { hoverable: true, clickable: true },
+        slots: { default: 'Content' }
+      })
+      expect(wrapper.classes()).toContain('hover:shadow-lg')
+      expect(wrapper.classes()).toContain('hover:-translate-y-0.5')
+      expect(wrapper.classes()).toContain('cursor-pointer')
+      expect(wrapper.classes()).toContain('active:scale-[0.98]')
+      expect(wrapper.classes()).toContain('transition-all')
+      expect(wrapper.classes()).toContain('transition-transform')
+    })
+
     it('does not apply interactive effects by default', () => {
       const wrapper = mount(Card, {
         slots: { default: 'Content' }
       })
       expect(wrapper.classes()).not.toContain('hover:shadow-lg')
       expect(wrapper.classes()).not.toContain('cursor-pointer')
+    })
+  })
+
+  // Test slot content
+  describe('Slot Content', () => {
+    it('renders default slot content', () => {
+      const wrapper = mount(Card, {
+        slots: { default: 'Test Content' }
+      })
+      expect(wrapper.text()).toBe('Test Content')
+    })
+
+    it('renders multiple elements in slot', () => {
+      const wrapper = mount(Card, {
+        slots: { default: '<div>First</div><div>Second</div>' }
+      })
+      expect(wrapper.findAll('div').length).toBe(3) // 2 slot divs + card div
     })
   })
 }) 
