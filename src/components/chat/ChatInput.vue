@@ -1,30 +1,28 @@
 <template>
   <div class="h-16 px-4 flex items-center border-t border-surface-200 bg-surface-50 flex-shrink-0">
     <form class="flex space-x-4 w-full" @submit.prevent="handleSubmit">
-      <input
+      <Input
         v-model="message"
         type="text"
         placeholder="Type a message..."
-        class="input flex-1"
         :disabled="disabled"
+        fullWidth
       />
-      <button
+      <Button
         type="submit"
-        class="btn"
-        :class="[
-          message.trim() ? 'btn-success' : 'btn-neutral',
-          disabled && 'opacity-50 cursor-not-allowed'
-        ]"
+        :variant="message.trim() ? 'success' : 'neutral'"
         :disabled="disabled || !message.trim()"
       >
         {{ isInputCoolingDown ? '...' : 'Send' }}
-      </button>
+      </Button>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import Input from '@/components/base/Input.vue'
+import Button from '@/components/base/Button.vue'
 
 const props = defineProps<{
   disabled: boolean

@@ -1,5 +1,7 @@
 <template>
-  <button
+  <component
+    :is="to ? 'router-link' : 'button'"
+    :to="to"
     :class="[
       // Base styles
       'inline-flex items-center justify-center',
@@ -22,7 +24,7 @@
     :aria-disabled="disabled || loading"
     :aria-busy="loading"
     v-bind="$attrs"
-    @click="$emit('click', $event)"
+    @click="!to && $emit('click', $event)"
   >
     <!-- Loading spinner -->
     <span v-if="loading" class="mr-2">
@@ -53,7 +55,7 @@
     <span :class="{ 'opacity-0': loading }">
       <slot />
     </span>
-  </button>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -65,6 +67,7 @@ interface Props {
   disabled?: boolean
   fullWidth?: boolean
   className?: string
+  to?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -74,7 +77,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   disabled: false,
   fullWidth: false,
-  className: ''
+  className: '',
+  to: ''
 })
 
 // Size variations

@@ -34,9 +34,9 @@
 
     <!-- Start New Chat Button -->
     <div class="h-16 px-4 flex items-center border-t border-surface-200 bg-surface-50 flex-shrink-0">
-      <router-link to="/new-chat" class="btn btn-primary w-full block text-center">
+      <Button variant="success" fullWidth to="/new-chat">
         Start New Chat
-      </router-link>
+      </Button>
     </div>
   </div>
 </template>
@@ -45,6 +45,7 @@
 import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
 import { useRouter } from 'vue-router'
+import Button from '@/components/base/Button.vue'
 
 interface Props {
   modelValue: boolean

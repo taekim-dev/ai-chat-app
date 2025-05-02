@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
-      <h1 class="text-4xl font-bold text-center mb-8">AI Chat App</h1>
+      <Text variant="h1" align="center" class="mb-8">AI Chat App</Text>
 
       <div v-if="chatStore.chatList.length > 0" class="space-y-4">
         <div
@@ -12,28 +12,28 @@
           <div class="flex items-center space-x-4">
             <span class="text-2xl">{{ getPersonaIcon(chat.personaId) }}</span>
             <div>
-              <h3 class="font-medium">{{ getPersonaName(chat.personaId) }}</h3>
-              <p class="text-sm text-gray-500">
+              <Text variant="h4" weight="medium">{{ getPersonaName(chat.personaId) }}</Text>
+              <Text variant="caption" color="muted">
                 {{ formatDate(chat.updatedAt) }}
-              </p>
+              </Text>
             </div>
           </div>
 
           <div class="flex space-x-2">
-            <button class="btn btn-primary" @click="openChat(chat.id)">Continue</button>
-            <button class="btn bg-red-500 text-white hover:bg-red-600" @click="removeChat(chat.id)">
-              Delete
-            </button>
+            <Button variant="primary" @click="openChat(chat.id)">Continue</Button>
+            <Button variant="error" @click="removeChat(chat.id)">Delete</Button>
           </div>
         </div>
       </div>
 
-      <div v-else class="text-center text-gray-500">No chats yet. Start a new conversation!</div>
+      <div v-else class="text-center">
+        <Text variant="body" color="muted">No chats yet. Start a new conversation!</Text>
+      </div>
 
       <div class="mt-8 text-center">
-        <router-link to="/new-chat" class="btn btn-primary text-lg px-6 py-3">
+        <Button variant="success" size="lg" to="/new-chat">
           Start New Chat
-        </router-link>
+        </Button>
       </div>
     </div>
   </div>
@@ -44,6 +44,8 @@ import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
 import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
+import Button from '@/components/base/Button.vue'
+import Text from '@/components/base/Text.vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
