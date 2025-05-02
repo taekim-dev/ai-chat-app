@@ -21,6 +21,22 @@
     @apply bg-primary-500 text-white hover:bg-primary-600 focus:ring-2 focus:ring-primary-500/20 focus:outline-none;
   }
 
+  .btn-success {
+    @apply bg-success-500 text-white hover:bg-success-600 focus:ring-2 focus:ring-success-500/20 focus:outline-none;
+  }
+
+  .btn-error {
+    @apply bg-error-500 text-white hover:bg-error-600 focus:ring-2 focus:ring-error-500/20 focus:outline-none;
+  }
+
+  .btn-info {
+    @apply bg-info-500 text-white hover:bg-info-600 focus:ring-2 focus:ring-info-500/20 focus:outline-none;
+  }
+
+  .btn-neutral {
+    @apply bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-2 focus:ring-neutral-400/20 focus:outline-none;
+  }
+
   .input {
     @apply px-4 py-2 border border-surface-300 rounded-md bg-surface-50 
            focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500

@@ -59,7 +59,7 @@
       </div>
       <button
         v-if="canRetry"
-        class="px-3 py-1 bg-error-100 hover:bg-error-200 rounded-md text-sm font-medium transition-colors retry-button"
+        class="btn btn-error text-sm"
         @click="$emit('retry')"
       >
         Retry

@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 interface Props {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'neutral'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'neutral' | 'success' | 'error' | 'info'
   size?: 'sm' | 'md' | 'lg'
   icon?: string
   loading?: boolean
@@ -88,6 +88,9 @@ const variantClasses = {
   secondary: 'bg-surface-200 text-content-300 hover:bg-surface-300 focus:ring-surface-400',
   outline: 'border-2 border-primary-500 text-primary-500 hover:bg-primary-50 focus:ring-primary-500',
   ghost: 'text-primary-500 hover:bg-primary-50 focus:ring-primary-500',
-  neutral: 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-neutral-400'
+  neutral: 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-neutral-400',
+  success: 'bg-success-500 text-white hover:bg-success-600 focus:ring-success-500',
+  error: 'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500',
+  info: 'bg-info-500 text-white hover:bg-info-600 focus:ring-info-500'
 }
 </script> 

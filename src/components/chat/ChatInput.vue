@@ -1,5 +1,5 @@
 <template>
-  <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
+  <div class="h-16 px-4 flex items-center border-t border-surface-200 bg-surface-50 flex-shrink-0">
     <form class="flex space-x-4 w-full" @submit.prevent="handleSubmit">
       <input
         v-model="message"
@@ -10,7 +10,11 @@
       />
       <button
         type="submit"
-        class="btn btn-primary"
+        class="btn"
+        :class="[
+          message.trim() ? 'btn-success' : 'btn-neutral',
+          disabled && 'opacity-50 cursor-not-allowed'
+        ]"
         :disabled="disabled || !message.trim()"
       >
         {{ isInputCoolingDown ? '...' : 'Send' }}
