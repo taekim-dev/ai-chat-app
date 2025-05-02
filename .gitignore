@@ -50,4 +50,10 @@ coverage
 
 # TypeScript incremental compilation cache
 *.tsbuildinfo
-tsconfig.tsbuildinfo 
+tsconfig.tsbuildinfo
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
