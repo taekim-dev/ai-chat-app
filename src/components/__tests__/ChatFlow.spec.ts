@@ -219,7 +219,7 @@ describe('ChatView Critical Paths', () => {
     await wrapper.vm.$nextTick()
 
     // Verify overlay appears
-    const overlay = wrapper.find('.bg-black.bg-opacity-50')
+    const overlay = wrapper.find('.bg-neutral-900.bg-opacity-50')
     expect(overlay.exists()).toBe(true)
     
     // Click overlay to close
@@ -227,7 +227,7 @@ describe('ChatView Critical Paths', () => {
     await wrapper.vm.$nextTick()
 
     // Verify overlay is gone
-    expect(wrapper.find('.bg-black.bg-opacity-50').exists()).toBe(false)
+    expect(wrapper.find('.bg-neutral-900.bg-opacity-50').exists()).toBe(false)
     
     wrapper.unmount()
   })
