@@ -1,13 +1,13 @@
 <template>
   <div
     :class="[
-      'fixed md:relative w-64 bg-white border-r flex flex-col z-30 h-full transition-transform duration-300 ease-in-out',
+      'fixed md:relative w-64 bg-surface-50 border-r border-surface-200 flex flex-col z-30 h-full transition-transform duration-300 ease-in-out',
       modelValue ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
     ]"
   >
     <!-- Chat History Header -->
-    <div class="h-16 px-4 flex justify-center items-center border-b">
-      <h2 class="text-xl font-semibold">Chat History</h2>
+    <div class="h-16 px-4 flex justify-center items-center border-b border-surface-200">
+      <h2 class="text-xl font-semibold text-content-400">Chat History</h2>
     </div>
 
     <!-- Chat List -->
@@ -17,8 +17,10 @@
           v-for="chat in chatStore.sortedChatList"
           :key="chat.id"
           :class="[
-            'w-full p-3 text-left rounded-lg transition-colors',
-            chat.id === chatStore.activeChat?.id ? 'bg-primary text-white' : 'hover:bg-gray-100'
+            'w-full p-3 text-left rounded-lg transition-colors duration-200',
+            chat.id === chatStore.activeChat?.id 
+              ? 'bg-primary-500 text-white' 
+              : 'hover:bg-surface-100 text-content-300'
           ]"
           @click="selectChat(chat.id)"
         >
@@ -31,7 +33,7 @@
     </div>
 
     <!-- Start New Chat Button -->
-    <div class="h-16 px-4 flex items-center border-t bg-white flex-shrink-0">
+    <div class="h-16 px-4 flex items-center border-t border-surface-200 bg-surface-50 flex-shrink-0">
       <router-link to="/new-chat" class="btn btn-primary w-full block text-center">
         Start New Chat
       </router-link>

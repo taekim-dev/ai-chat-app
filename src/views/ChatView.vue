@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-screen bg-gray-50">
+  <div class="flex h-screen bg-surface-50">
     <!-- Mobile Overlay -->
     <div
       v-if="isSidebarOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 md:hidden z-20"
+      class="fixed inset-0 bg-neutral-900 bg-opacity-50 md:hidden z-20"
       @click="isSidebarOpen = false"
     ></div>
 
@@ -14,11 +14,11 @@
     <div class="flex-1 flex flex-col w-full overflow-hidden">
       <div v-if="chatStore.activeChat" class="flex-1 flex flex-col h-full">
         <!-- Chat Header -->
-        <div class="h-16 px-4 flex items-center border-b bg-white flex-shrink-0 sticky top-0 z-10">
+        <div class="h-16 px-4 flex items-center border-b border-surface-200 bg-surface-50 flex-shrink-0 sticky top-0 z-10">
           <div class="flex items-center justify-between w-full relative">
             <!-- Hamburger Menu for Mobile -->
             <button
-              class="md:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+              class="md:hidden p-2 hover:bg-surface-100 rounded-lg text-content-300"
               @click="isSidebarOpen = !isSidebarOpen"
             >
               <svg
@@ -42,7 +42,7 @@
               <span class="text-2xl">
                 {{ getPersonaIcon(chatStore.activeChat.personaId) }}
               </span>
-              <h2 class="text-xl font-medium">
+              <h2 class="text-xl font-medium text-content-400">
                 {{ getPersonaName(chatStore.activeChat.personaId) }}
               </h2>
             </div>
@@ -71,7 +71,7 @@
       </div>
 
       <!-- No Active Chat -->
-      <div v-else class="flex-1 flex items-center justify-center text-gray-500">
+      <div v-else class="flex-1 flex items-center justify-center text-content-200">
         Select a chat or start a new conversation
       </div>
     </div>

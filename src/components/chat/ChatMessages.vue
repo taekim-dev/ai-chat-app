@@ -14,8 +14,8 @@
         :class="[
           'rounded-2xl px-4 py-3 max-w-[85%] break-words shadow-sm',
           message.type === 'user'
-            ? 'bg-blue-500 text-white rounded-tr-none'
-            : 'bg-white text-gray-900 rounded-tl-none border border-gray-100',
+            ? 'bg-primary-500 text-white rounded-tr-none'
+            : 'bg-surface-50 text-content-400 rounded-tl-none border border-surface-200',
           message.type === 'agent' ? 'typing-animation' : ''
         ]"
         v-html="formatMessageHtml(message)"
@@ -23,14 +23,14 @@
     </div>
 
     <div v-if="isSending" class="flex justify-start">
-      <div class="rounded-2xl px-4 py-3 bg-white text-gray-900 border border-gray-100 rounded-tl-none shadow-sm">
+      <div class="rounded-2xl px-4 py-3 bg-surface-50 text-content-400 border border-surface-200 rounded-tl-none shadow-sm">
         <div class="flex items-center space-x-2">
           <span class="text-2xl">{{ personaIcon }}</span>
           <div class="flex space-x-1">
             <div
               v-for="i in 3"
               :key="i"
-              class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"
+              class="w-2 h-2 bg-surface-300 rounded-full animate-bounce"
               :style="{ 'animation-delay': `${(i - 1) * 0.2}s` }"
             ></div>
           </div>
@@ -40,7 +40,7 @@
 
     <div
       v-if="error"
-      class="max-w-3xl mx-auto p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-center justify-between"
+      class="max-w-3xl mx-auto p-4 bg-error-50 border border-error-200 rounded-lg text-error-700 flex items-center justify-between"
     >
       <div class="flex items-center space-x-2">
         <svg
@@ -59,7 +59,7 @@
       </div>
       <button
         v-if="canRetry"
-        class="px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm font-medium transition-colors retry-button"
+        class="px-3 py-1 bg-error-100 hover:bg-error-200 rounded-md text-sm font-medium transition-colors retry-button"
         @click="$emit('retry')"
       >
         Retry
@@ -170,18 +170,7 @@ const formatMessageHtml = (message: Message): string => {
   }
 }
 
-.retry-button {
-  margin-top: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  background-color: #DC3545;
-  color: white;
-  border: none;
-  cursor: pointer;
-  /* Add focus styles */
-  &:focus {
-    outline: 2px solid #007AFF;
-    outline-offset: 2px;
-  }
+.retry-button:focus {
+  @apply outline-2 outline-offset-2 outline-primary-500;
 }
 </style> 
