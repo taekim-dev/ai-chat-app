@@ -13,22 +13,18 @@
     <!-- Chat List -->
     <div class="flex-1 overflow-y-auto p-4 flex-shrink-0">
       <div class="space-y-2">
-        <button
+        <Button
           v-for="chat in chatStore.sortedChatList"
           :key="chat.id"
-          :class="[
-            'w-full p-3 text-left rounded-lg transition-colors duration-200',
-            chat.id === chatStore.activeChat?.id 
-              ? 'bg-primary-500 text-white' 
-              : 'hover:bg-surface-100 text-content-300'
-          ]"
+          :variant="chat.id === chatStore.activeChat?.id ? 'primary' : 'secondary'"
+          class="w-full !justify-start !p-3 !h-auto text-content-400 hover:text-content-400"
           @click="selectChat(chat.id)"
         >
-          <div class="flex items-center space-x-2">
-            <span class="text-xl">{{ getPersonaIcon(chat.personaId) }}</span>
-            <span class="font-medium">{{ getPersonaName(chat.personaId) }}</span>
+          <div class="flex items-center space-x-2 min-w-0">
+            <span class="text-xl flex-shrink-0">{{ getPersonaIcon(chat.personaId) }}</span>
+            <span class="font-medium truncate">{{ getPersonaName(chat.personaId) }}</span>
           </div>
-        </button>
+        </Button>
       </div>
     </div>
 

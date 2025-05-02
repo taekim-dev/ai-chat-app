@@ -38,11 +38,11 @@
             </button>
 
             <!-- Centered Title -->
-            <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
-              <span class="text-2xl">
+            <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-3 whitespace-nowrap">
+              <span class="text-2xl flex-shrink-0">
                 {{ getPersonaIcon(chatStore.activeChat.personaId) }}
               </span>
-              <h2 class="text-xl font-medium text-content-400">
+              <h2 class="text-xl font-medium text-content-400 truncate">
                 {{ getPersonaName(chatStore.activeChat.personaId) }}
               </h2>
             </div>
