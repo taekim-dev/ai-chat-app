@@ -70,6 +70,7 @@ interface Props {
   to?: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
   size: 'md',
@@ -79,7 +80,7 @@ const props = withDefaults(defineProps<Props>(), {
   fullWidth: false,
   className: '',
   to: ''
-})
+}) // Props are used in template bindings
 
 // Size variations
 const sizeClasses = {

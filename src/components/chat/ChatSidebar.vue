@@ -51,7 +51,8 @@ interface Props {
   modelValue: boolean
 }
 
-const props = defineProps<Props>()
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const props = defineProps<Props>() // modelValue prop is used in template class binding
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()

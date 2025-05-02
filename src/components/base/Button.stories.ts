@@ -1,34 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 import Button from './Button.vue'
 
-type ButtonStoryProps = {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'neutral' | 'success' | 'error' | 'info'
-  size?: 'sm' | 'md' | 'lg'
-  icon?: string
-  loading?: boolean
-  disabled?: boolean
-  fullWidth?: boolean
-  className?: string
-}
-
+// More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 const meta = {
   title: 'Base/Button',
   component: Button,
+  tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'secondary', 'outline', 'ghost', 'neutral', 'success', 'error', 'info'],
+      options: ['primary', 'secondary', 'outline', 'ghost', 'neutral', 'success', 'error', 'info']
     },
     size: {
       control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
-  },
-} as Meta<any>
+      options: ['sm', 'md', 'lg']
+    }
+  }
+} satisfies Meta<typeof Button>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
+// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary: Story = {
   args: {
     variant: 'primary',
@@ -38,8 +31,8 @@ export const Primary: Story = {
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Primary Button</Button>',
-  }),
+    template: '<Button v-bind="args">Primary Button</Button>'
+  })
 }
 
 export const Secondary: Story = {
@@ -51,47 +44,8 @@ export const Secondary: Story = {
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Secondary Button</Button>',
-  }),
-}
-
-export const Outline: Story = {
-  args: {
-    variant: 'outline',
-  },
-  render: (args) => ({
-    components: { Button },
-    setup() {
-      return { args }
-    },
-    template: '<Button v-bind="args">Outline Button</Button>',
-  }),
-}
-
-export const Ghost: Story = {
-  args: {
-    variant: 'ghost',
-  },
-  render: (args) => ({
-    components: { Button },
-    setup() {
-      return { args }
-    },
-    template: '<Button v-bind="args">Ghost Button</Button>',
-  }),
-}
-
-export const Neutral: Story = {
-  args: {
-    variant: 'neutral',
-  },
-  render: (args) => ({
-    components: { Button },
-    setup() {
-      return { args }
-    },
-    template: '<Button v-bind="args">Neutral Button</Button>',
-  }),
+    template: '<Button v-bind="args">Secondary Button</Button>'
+  })
 }
 
 export const Success: Story = {
@@ -103,8 +57,8 @@ export const Success: Story = {
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Success Button</Button>',
-  }),
+    template: '<Button v-bind="args">Success Button</Button>'
+  })
 }
 
 export const Error: Story = {
@@ -116,8 +70,8 @@ export const Error: Story = {
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Error Button</Button>',
-  }),
+    template: '<Button v-bind="args">Error Button</Button>'
+  })
 }
 
 export const Info: Story = {
@@ -129,62 +83,45 @@ export const Info: Story = {
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Info Button</Button>',
-  }),
+    template: '<Button v-bind="args">Info Button</Button>'
+  })
 }
 
-export const WithIcon: Story = {
+export const Small: Story = {
   args: {
-    variant: 'primary',
-    icon: '🔍',
+    size: 'sm',
   },
   render: (args) => ({
     components: { Button },
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Search</Button>',
-  }),
+    template: '<Button v-bind="args">Small Button</Button>'
+  })
 }
 
-export const Loading: Story = {
+export const Medium: Story = {
   args: {
-    variant: 'primary',
-    loading: true,
+    size: 'md',
   },
   render: (args) => ({
     components: { Button },
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Loading...</Button>',
-  }),
+    template: '<Button v-bind="args">Medium Button</Button>'
+  })
 }
 
-export const Disabled: Story = {
+export const Large: Story = {
   args: {
-    variant: 'primary',
-    disabled: true,
+    size: 'lg',
   },
   render: (args) => ({
     components: { Button },
     setup() {
       return { args }
     },
-    template: '<Button v-bind="args">Disabled</Button>',
-  }),
-}
-
-export const FullWidth: Story = {
-  args: {
-    variant: 'primary',
-    fullWidth: true,
-  },
-  render: (args) => ({
-    components: { Button },
-    setup() {
-      return { args }
-    },
-    template: '<Button v-bind="args">Full Width Button</Button>',
-  }),
+    template: '<Button v-bind="args">Large Button</Button>'
+  })
 } 
