@@ -7,7 +7,8 @@
         <div
           v-for="chat in chatStore.sortedChatList"
           :key="chat.id"
-          class="bg-white rounded-lg shadow p-4 flex items-center justify-between"
+          class="bg-white rounded-lg shadow p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors"
+          @click="openChat(chat.id)"
         >
           <div class="flex items-center space-x-4">
             <span class="text-2xl">{{ getPersonaIcon(chat.personaId) }}</span>
@@ -19,9 +20,8 @@
             </div>
           </div>
 
-          <div class="flex space-x-2">
-            <Button variant="primary" @click="openChat(chat.id)">Continue</Button>
-            <Button variant="error" @click="removeChat(chat.id)">Delete</Button>
+          <div>
+            <Button variant="error" @click.stop="showDeleteConfirm(chat.id)">Delete</Button>
           </div>
         </div>
       </div>
@@ -36,23 +36,35 @@
         </Button>
       </div>
     </div>
+
+    <ConfirmDialog
+      v-model="isConfirmDialogOpen"
+      title="Delete Chat"
+      message="Are you sure you want to delete this chat?"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useChatStore } from '@/stores/chat'
 import { usePersonaStore } from '@/stores/persona'
 import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
 import Button from '@/components/base/Button.vue'
 import Text from '@/components/base/Text.vue'
+import ConfirmDialog from '@/components/base/ConfirmDialog.vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
 const personaStore = usePersonaStore()
 
+const isConfirmDialogOpen = ref(false)
+const chatToDelete = ref<string | null>(null)
+
 const formatDate = (date: Date) => {
-  return format(date, 'MMM d, yyyy h:mm a')
+  return format(date, 'MMM d, yyyy')
 }
 
 const getPersonaIcon = (personaId: string) => {
@@ -68,9 +80,15 @@ const openChat = (chatId: string) => {
   router.push('/chat')
 }
 
-const removeChat = (chatId: string) => {
-  if (confirm('Are you sure you want to delete this chat?')) {
-    chatStore.removeChat(chatId)
+const showDeleteConfirm = (chatId: string) => {
+  chatToDelete.value = chatId
+  isConfirmDialogOpen.value = true
+}
+
+const confirmDelete = () => {
+  if (chatToDelete.value) {
+    chatStore.removeChat(chatToDelete.value)
+    chatToDelete.value = null
   }
 }
 </script>

@@ -33,8 +33,8 @@ test.describe('Critical Chat Flow', () => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'AI Chat App' })).toBeVisible()
 
-    // Return to the same chat
-    await page.getByRole('button', { name: 'Continue' }).first().click()
+    // Return to the same chat by clicking the chat item
+    await page.getByText('Therapist').first().click()
     
     // Wait for chat view to load
     await page.waitForTimeout(1500)
