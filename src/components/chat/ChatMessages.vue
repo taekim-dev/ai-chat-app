@@ -40,12 +40,12 @@
 
     <div
       v-if="error"
-      class="max-w-3xl mx-auto p-4 bg-error-50 border border-error-200 rounded-lg text-error-700 flex items-center justify-between"
+      class="max-w-3xl mx-auto p-4 bg-error-50 border border-error-200 rounded-lg text-error-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
     >
       <div class="flex items-center space-x-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
+          class="h-5 w-5 flex-shrink-0"
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -55,27 +55,30 @@
             clip-rule="evenodd"
           />
         </svg>
-        <span>{{ error }}</span>
+        <span class="text-sm">{{ error }}</span>
       </div>
-      <button
+      <Button
         v-if="canRetry"
-        class="btn btn-error text-sm"
+        variant="error"
+        size="sm"
+        class="w-full sm:w-auto"
         @click="$emit('retry')"
       >
         Retry
-      </button>
+      </Button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from 'vue'
+import Button from '@/components/base/Button.vue'
 
 interface MessageContent {
   content: string
 }
 
-interface Message {
+export interface Message {
   id: string
   type: 'user' | 'agent'
   content: string | MessageContent
