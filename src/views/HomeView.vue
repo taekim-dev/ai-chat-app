@@ -49,16 +49,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useChatStore } from '@/stores/chat'
-import { usePersonaStore } from '@/stores/persona'
-import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
 import Button from '@/components/base/Button.vue'
 import Text from '@/components/base/Text.vue'
 import ConfirmDialog from '@/components/base/ConfirmDialog.vue'
+import { usePersona } from '@/composables/usePersona'
+import { useChatNavigation } from '@/composables/useChatNavigation'
 
-const router = useRouter()
 const chatStore = useChatStore()
-const personaStore = usePersonaStore()
+const { getPersonaIcon, getPersonaName } = usePersona()
+const { navigateToChat, removeChat } = useChatNavigation()
 
 const isConfirmDialogOpen = ref(false)
 const chatToDelete = ref<string | null>(null)
@@ -67,17 +67,9 @@ const formatDate = (date: Date) => {
   return format(date, 'MMM d, yyyy')
 }
 
-const getPersonaIcon = (personaId: string) => {
-  return personaStore.getPersonaById(personaId)?.icon || '👤'
-}
-
-const getPersonaName = (personaId: string) => {
-  return personaStore.getPersonaById(personaId)?.name || 'Unknown'
-}
-
-const openChat = (chatId: string) => {
+const openChat = async (chatId: string) => {
   chatStore.setActiveChat(chatId)
-  router.push(`/chat/${chatId}`)
+  await navigateToChat(chatId)
 }
 
 const showDeleteConfirm = (chatId: string) => {
@@ -85,9 +77,10 @@ const showDeleteConfirm = (chatId: string) => {
   isConfirmDialogOpen.value = true
 }
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
   if (chatToDelete.value) {
-    chatStore.removeChat(chatToDelete.value)
+    await removeChat(chatToDelete.value)
+    isConfirmDialogOpen.value = false
     chatToDelete.value = null
   }
 }

@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid'
 import * as api from '@/services/api'
 import { storage } from '@/services/storage'
 import { syncService } from '@/services/sync'
-import { useRouter } from 'vue-router'
 import { db } from '@/services/db'
 import { rateLimiter } from '@/services/rateLimiter'
 
@@ -215,13 +214,6 @@ export const useChatStore = defineStore('chat', {
       this.chatList = this.chatList.filter(chat => chat.id !== chatId)
       if (this.activeChat?.id === chatId) {
         this.activeChat = this.mostRecentChat
-
-        const router = useRouter()
-        if (this.activeChat) {
-          router.replace({ name: 'chat', params: { chatId: this.activeChat.id } })
-        } else {
-          router.replace({ name: 'chat' })
-        }
       }
       // Clear rate limits when removing a chat
       rateLimiter.clearLimits(chatId)

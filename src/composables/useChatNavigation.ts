@@ -26,8 +26,10 @@ export function useChatNavigation() {
 
   const removeChat = async (chatId: string) => {
     await chatStore.removeChat(chatId)
-    if (!chatStore.activeChat) {
-      await router.replace({ name: 'new-chat' })
+    // If we're in the chat view and the deleted chat was active,
+    // navigate back to home
+    if (router.currentRoute.value.name === 'chat') {
+      await router.replace({ name: 'home' })
     }
   }
 
