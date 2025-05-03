@@ -81,105 +81,37 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useChatStore } from '@/stores/chat'
-import { usePersonaStore } from '@/stores/persona'
-import { useRoute, useRouter } from 'vue-router'
-import { rateLimiter } from '@/services/rateLimiter'
+import { useRoute } from 'vue-router'
 import ChatSidebar from '@/components/chat/ChatSidebar.vue'
 import ChatMessages from '@/components/chat/ChatMessages.vue'
 import ChatInput from '@/components/chat/ChatInput.vue'
+import { useChat } from '@/composables/useChat'
+import { usePersona } from '@/composables/usePersona'
+import { useChatNavigation } from '@/composables/useChatNavigation'
 
 const route = useRoute()
-const router = useRouter()
 const chatStore = useChatStore()
-const personaStore = usePersonaStore()
+const { getPersonaIcon, getPersonaName } = usePersona()
+const { isSending, isInputCoolingDown, sendMessage, retryMessage } = useChat()
+const { initializeChat } = useChatNavigation()
 
-const isSending = ref(false)
 const isSidebarOpen = ref(false)
-const isInputCoolingDown = ref(false)
-const cooldownTimer = ref<number | null>(null)
 
 // Initialize chat from route parameter
 onMounted(async () => {
   const chatId = route.params.chatId as string | null
-  
-  // Only initialize if we have a chat ID
-  if (chatId) {
-    await chatStore.initializeWithChat(chatId)
-    const chat = chatStore.chatList.find(c => c.id === chatId)
-    if (!chat) {
-      router.replace({ name: 'new-chat' })
-    }
-  } else {
-    router.replace({ name: 'new-chat' })
-  }
+  await initializeChat(chatId)
 })
 
 // Watch for route changes to update active chat
 watch(
   () => route.params.chatId,
   async (newChatId) => {
-    if (!newChatId) {
-      router.replace({ name: 'new-chat' })
-      return
-    }
-
-    const chat = chatStore.chatList.find(c => c.id === newChatId)
-    if (chat) {
-      chatStore.setActiveChat(newChatId as string)
-    } else {
-      router.replace({ name: 'new-chat' })
+    if (newChatId) {
+      await initializeChat(newChatId as string)
     }
   }
 )
-
-const getPersonaIcon = (personaId: string) => {
-  return personaStore.getPersonaById(personaId)?.icon || '👤'
-}
-
-const getPersonaName = (personaId: string) => {
-  return personaStore.getPersonaById(personaId)?.name || 'Unknown'
-}
-
-const startCooldown = (cooldownMs: number) => {
-  isInputCoolingDown.value = true
-  if (cooldownTimer.value) {
-    clearTimeout(cooldownTimer.value)
-  }
-  cooldownTimer.value = window.setTimeout(() => {
-    isInputCoolingDown.value = false
-  }, cooldownMs)
-}
-
-const sendMessage = async (message: string) => {
-  isSending.value = true
-
-  try {
-    await chatStore.sendMessage(message)
-    const rateLimit = await rateLimiter.checkRateLimit(chatStore.activeChat!.id)
-    if (!rateLimit.allowed && rateLimit.cooldownMs) {
-      startCooldown(rateLimit.cooldownMs)
-    }
-  } catch (error) {
-    console.error('Failed to send message:', error)
-  } finally {
-    isSending.value = false
-  }
-}
-
-const retryMessage = async () => {
-  try {
-    isSending.value = true
-    await chatStore.retryLastFailedMessage()
-    const rateLimit = await rateLimiter.checkRateLimit(chatStore.activeChat!.id)
-    if (!rateLimit.allowed && rateLimit.cooldownMs) {
-      startCooldown(rateLimit.cooldownMs)
-    }
-  } catch (error) {
-    console.error('Failed to retry message:', error)
-  } finally {
-    isSending.value = false
-  }
-}
 </script>
 
 <style scoped>

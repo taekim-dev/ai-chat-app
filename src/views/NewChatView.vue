@@ -10,7 +10,7 @@
             v-if="celebrityPersona"
             variant="ghost"
             class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl max-w-lg w-full transform hover:scale-105 transition-all duration-200"
-            @click="startChat(celebrityPersona)"
+            @click="handleStartChat(celebrityPersona)"
           >
             <div class="flex flex-col items-center space-y-4">
               <div class="relative">
@@ -31,7 +31,7 @@
             :key="persona.id"
             variant="ghost"
             class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-left"
-            @click="startChat(persona)"
+            @click="handleStartChat(persona)"
           >
             <div class="flex items-center space-x-4">
               <span class="text-3xl">{{ persona.icon }}</span>
@@ -48,34 +48,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { usePersonaStore } from '@/stores/persona'
-import { useChatStore } from '@/stores/chat'
+import { ref } from 'vue'
 import type { Persona } from '@/types'
 import Button from '@/components/base/Button.vue'
+import { usePersona } from '@/composables/usePersona'
+import { useChatNavigation } from '@/composables/useChatNavigation'
 
-const router = useRouter()
-const personaStore = usePersonaStore()
-const chatStore = useChatStore()
+const { regularPersonas, celebrityPersona } = usePersona()
+const { startNewChat } = useChatNavigation()
 const isCreating = ref(false)
 
-// Separate regular personas from celebrity chat
-const regularPersonas = computed(() => {
-  return personaStore.personas.filter(p => p.id !== 'mystery')
-})
-
-const celebrityPersona = computed(() => {
-  return personaStore.personas.find(p => p.id === 'mystery')
-})
-
-async function startChat(persona: Persona) {
+async function handleStartChat(persona: Persona) {
   if (isCreating.value) return
   
   try {
     isCreating.value = true
-    const newChat = await chatStore.createChat(persona)
-    await router.push(`/chat/${newChat.id}`)
+    await startNewChat(persona)
   } finally {
     isCreating.value = false
   }

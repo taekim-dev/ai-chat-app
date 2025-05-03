@@ -39,29 +39,28 @@
 
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
-import { usePersonaStore } from '@/stores/persona'
-import { useRouter } from 'vue-router'
 import Button from '@/components/base/Button.vue'
+import { usePersona } from '@/composables/usePersona'
+import { useChatNavigation } from '@/composables/useChatNavigation'
 
 interface Props {
   modelValue: boolean
 }
 
+// Props is used in template for v-model binding
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const props = defineProps<Props>() // modelValue prop is used in template class binding
+const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()
 
-const router = useRouter()
 const chatStore = useChatStore()
-const personaStore = usePersonaStore()
-
-const getPersonaIcon = (personaId: string) => personaStore.getPersonaById(personaId)?.icon || '👤'
-const getPersonaName = (personaId: string) => personaStore.getPersonaById(personaId)?.name || 'Unknown'
+const { getPersonaIcon, getPersonaName } = usePersona()
+const { navigateToChat } = useChatNavigation()
 
 const selectChat = async (chatId: string) => {
-  await router.replace({ name: 'chat', params: { chatId } })
+  chatStore.setActiveChat(chatId)
+  await navigateToChat(chatId)
   emit('update:modelValue', false)
 }
 </script> 
